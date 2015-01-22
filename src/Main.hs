@@ -1,13 +1,23 @@
-{-# LANGUAGE OverloadedStrings    #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 import Database.Persist (insert, get)
-import Database.Persist.Sqlite (runMigration, runSqlite)
+import Database.Persist.Sql (runMigration)
+import Database.Persist.Sqlite (runSqlite)
+import Database.Persist.Postgresql (withPostgresqlPool, runSqlPersistMPool)
 import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Logger (runStdoutLoggingT)
+import System.Environment (getArgs)
 
 import Model
 
 main :: IO ()
-main = runSqlite ":memory:" $ do
+main = do
+    args <- getArgs
+    (if elem "pg" args
+        then runPostgresql ""
+        else runSqlite ":memory:") action
+
+action = do
     runMigration migrateAll
     stringTopic <- insert $ Topic "String" ""
     howToString <- insert $ Concept (Just stringTopic) "How to string"
@@ -22,3 +32,7 @@ main = runSqlite ":memory:" $ do
      }
     string <- get stringGuide
     liftIO $ print string
+
+runPostgresql connStr action
+    = runStdoutLoggingT $ withPostgresqlPool connStr 1 $ \pool ->
+        liftIO $ flip runSqlPersistMPool pool $ action

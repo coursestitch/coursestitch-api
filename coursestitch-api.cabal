@@ -16,10 +16,11 @@ cabal-version:       >=1.10
 
 executable coursestitch-api
   main-is:             Main.hs
-  build-depends:       persistent, persistent-template, persistent-sqlite,
+  build-depends:       persistent, persistent-template, persistent-sqlite, persistent-postgresql,
                        esqueleto,
                        scotty,
                        transformers,
+                       monad-logger,
                        template-haskell,
                        text,
                        base >=4.6 && <4.7
