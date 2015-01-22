@@ -6,16 +6,18 @@ import Database.Persist.Sqlite (runSqlite)
 import Database.Persist.Postgresql (withPostgresqlPool, runSqlPersistMPool)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Logger (runStdoutLoggingT)
-import System.Environment (getArgs)
+import System.Environment (lookupEnv)
+import Data.String (fromString)
 
 import Model
 
 main :: IO ()
 main = do
-    args <- getArgs
-    (if elem "pg" args
-        then runPostgresql ""
-        else runSqlite ":memory:") action
+    connStr <- lookupEnv "DATABASE_URL"
+    let runDB = case connStr of
+            Nothing -> runSqlite ":memory:"
+            Just cs -> runPostgresql (fromString cs)
+    runDB action
 
 action = do
     runMigration migrateAll
