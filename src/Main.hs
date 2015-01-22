@@ -1,22 +1,31 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-import Database.Persist.Sqlite (runSqlite)
-import Database.Persist.Postgresql (withPostgresqlPool, runSqlPersistMPool)
+module Main where
+
+import Database.Persist.Sql (ConnectionPool, runSqlPool, runMigration)
+import Database.Persist.Sqlite (withSqlitePool)
+import Database.Persist.Postgresql (withPostgresqlPool)
+
 import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Logger (runStdoutLoggingT)
+import Control.Monad.Logger (runNoLoggingT)
 import System.Environment (lookupEnv)
 import Data.String (fromString)
+import Web.Scotty (ScottyM, scotty, get)
 
 import qualified Handlers
+import Handlers (testData)
+import Model (migrateAll)
 
 main :: IO ()
 main = do
     connStr <- lookupEnv "DATABASE_URL"
-    let runDB = case connStr of
-            Nothing -> runSqlite ":memory:"
-            Just cs -> runPostgresql (fromString cs)
-    runDB Handlers.action
+    let withPool = case connStr of
+            Nothing -> withSqlitePool ":memory:"
+            Just cs -> withPostgresqlPool (fromString cs)
+    runNoLoggingT $ withPool 2 $ \pool -> liftIO $ do
+        runSqlPool (runMigration migrateAll >> testData) pool
+        scotty 7000 (app pool)
 
-runPostgresql connStr action
-    = runStdoutLoggingT $ withPostgresqlPool connStr 1 $ \pool ->
-        liftIO $ flip runSqlPersistMPool pool $ action
+app :: ConnectionPool -> ScottyM ()
+app pool = do
+    get "/" $ Handlers.root pool

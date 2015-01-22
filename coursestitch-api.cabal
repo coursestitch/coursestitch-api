@@ -19,8 +19,7 @@ executable coursestitch-api
   build-depends:       persistent, persistent-template, persistent-sqlite, persistent-postgresql,
                        esqueleto,
                        scotty,
-                       transformers,
-                       monad-logger,
+                       transformers, monad-logger,
                        template-haskell,
                        text,
                        base >=4.6 && <4.7

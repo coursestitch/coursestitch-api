@@ -2,16 +2,34 @@
 
 module Handlers where
 
-import Control.Monad.IO.Class (liftIO)
-import Database.Persist (insert, get)
-import Database.Persist.Sql (runMigration, SqlPersistM)
+import Database.Persist (Entity, insert, get, entityVal)
+import Database.Persist.Sql (ConnectionPool, runSqlPool, SqlPersistT)
 import Database.Esqueleto (select, from, (^.), (?.), (==.), on, InnerJoin(..), just)
+
+import Control.Monad.IO.Class (liftIO)
+import Data.String (fromString)
+import Web.Scotty (ActionM, text)
 
 import Model
 
-action :: SqlPersistM ()
-action = do
-    runMigration migrateAll
+root :: ConnectionPool -> ActionM ()
+root pool = do
+    topics <- liftIO $ runSqlPool getTopics pool
+    text (fromString . show $ topics)
+
+getTopics :: SqlPersistT IO [Topic]
+getTopics = do
+    -- Select all concepts in the DB, and get the topic associated with them.
+    topics <- select $
+        from $ \(concept `InnerJoin` topic) -> do
+        on (concept ^. ConceptTopic ==. just (topic ^. TopicId))
+        return topic
+    -- entityVal upwraps database entities.
+    return $ map entityVal topics
+
+testData :: SqlPersistT IO ()
+testData = do
+    -- Create dummy data.
     stringTopic <- insert $ Topic "String" ""
     howToString <- insert $ Concept (Just stringTopic) "How to string"
     stringGuide <- insert $ Resource {
@@ -23,8 +41,4 @@ action = do
         resourcePreview = "blah blah blah",
         resourceKeywords = "strings, stringing, str"
      }
-    topics <- select $
-        from $ \(concept `InnerJoin` topic) -> do
-        on (concept ^. ConceptTopic ==. just (topic ^. TopicId))
-        return topic
-    liftIO $ print topics
+    return ()
