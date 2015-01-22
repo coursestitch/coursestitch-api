@@ -41,4 +41,5 @@ testData = do
         resourcePreview = "blah blah blah",
         resourceKeywords = "strings, stringing, str"
      }
+    insert $ Relationship stringGuide Taught howToString
     return ()
