@@ -10,7 +10,9 @@ import Model
 testData :: SqlPersistT IO ()
 testData = do
     -- Create dummy data.
-    stringTopic <- insert $ Topic "String" ""
+    stringTopic <- insert $ Topic "String" "A list of characters"
+    integerTopic <- insert $ Topic "Integer" "A whole number"
+    functionTopic <- insert $ Topic "Function" "An operation that maps some input variables to some output variable"
     howToString <- insert $ Concept (Just stringTopic) "How to string"
     stringGuide <- insert $ Resource {
         resourceTitle = "How does one string? All your questions answered.",
