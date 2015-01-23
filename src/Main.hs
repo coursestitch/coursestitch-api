@@ -13,8 +13,8 @@ import Data.String (fromString)
 import Web.Scotty (ScottyM, scotty, get)
 
 import qualified Handlers
-import Handlers (testData)
 import Model (migrateAll)
+import Model.TestData (testData)
 
 main :: IO ()
 main = do
