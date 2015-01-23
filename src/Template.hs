@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Template (
     module Template.Topic,
     template
@@ -5,8 +7,10 @@ module Template (
 
 import Template.Topic
 
-import Web.Scotty (ActionM, raw)
+import Web.Scotty (ActionM, raw, setHeader)
 import Lucid (Html, renderBS)
 
 template :: Html () -> ActionM ()
-template = raw . renderBS
+template html = do
+    setHeader "Content-Type" "text/html"
+    raw . renderBS $ html
