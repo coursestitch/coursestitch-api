@@ -39,7 +39,7 @@ Topic
     summary Text
     deriving Show
 
-Relstionship
+Relationship
     resource     ResourceId
     relationship RelationshipType
     concept      ConceptId
