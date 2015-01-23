@@ -29,3 +29,4 @@ main = do
 app :: ConnectionPool -> ScottyM ()
 app pool = do
     get "/" $ Handlers.root pool
+    get "/topic" $ Handlers.topics pool
