@@ -2,13 +2,14 @@
 
 module Template.Topic where
 
-import Data.Monoid (mconcat)
-
 import Lucid
 import Model
 
+import Template.Template
+import Template.Concept
+
 topics :: [Topic] -> Html ()
-topics ts = ul_ $ mconcat $ map (li_ . topicSimple) ts
+topics ts = unorderedList $ map topicSimple ts
 
 topic :: Topic -> [Concept] -> Html ()
 topic topic concepts = article_ $ topicDetailed topic concepts
@@ -22,7 +23,13 @@ topicDetailed :: Topic -> [Concept] -> Html ()
 topicDetailed topic concepts = do
     topicHeading topic
     topicText topic
-    p_ "No concepts"
+    
+    topicConceptsHeading
+    case concepts of
+        [] -> topicConceptsMissing
+        concepts -> unorderedList $ map conceptSimple concepts
 
 topicHeading = h1_ . toHtml . topicTitle
 topicText = p_ . toHtml . topicSummary
+topicConceptsHeading = h2_ "Concepts"
+topicConceptsMissing = p_ "This topic has no concepts"

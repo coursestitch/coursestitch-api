@@ -28,5 +28,5 @@ topic :: ConnectionPool -> ActionM ()
 topic pool = do
     title <- param "topic"
     topic <- liftIO $ runSqlPool (getTopic title) pool
-    case topic of Nothing    -> text "No topic found"
-                  Just topic -> template $ Template.topic topic []
+    case topic of Nothing                -> text "No topic found"
+                  Just (topic, concepts) -> template $ Template.topic topic concepts
