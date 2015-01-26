@@ -30,3 +30,8 @@ topic pool = do
     topic <- liftIO $ runSqlPool (getTopic title) pool
     case topic of Nothing                -> text "No topic found"
                   Just (topic, concepts) -> template $ Template.topic topic concepts
+
+concepts :: ConnectionPool -> ActionM ()
+concepts pool = do
+    conceptList <- liftIO $ runSqlPool getConcepts pool
+    template $ Template.concepts conceptList

@@ -31,3 +31,4 @@ app pool = do
     get "/" $ Handlers.root pool
     get "/topic" $ Handlers.topics pool
     get "/topic/:topic" $ Handlers.topic pool
+    get "/concept" $ Handlers.concepts pool

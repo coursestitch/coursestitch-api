@@ -15,6 +15,17 @@ group abs = case as of []   -> Nothing
     where (as, bs) = unzip abs
           justBs = map fromJust $ filter isJust bs
 
+
+getConcepts :: SqlPersistT IO [Concept]
+getConcepts = do
+    -- Select all concepts in the DB
+    topics <- select $
+        from $ \concept -> do
+        return concept
+    -- entityVal upwraps database entities.
+    return $ map entityVal topics
+
+
 getTopics :: SqlPersistT IO [Topic]
 getTopics = do
     -- Select all topics in the DB, and the concepts associated with them.
