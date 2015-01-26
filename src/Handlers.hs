@@ -19,6 +19,21 @@ root pool = do
     topics <- liftIO $ runSqlPool getTopics pool
     text (fromString . show $ topics)
 
+
+concepts :: ConnectionPool -> ActionM ()
+concepts pool = do
+    conceptList <- liftIO $ runSqlPool getConcepts pool
+    template $ Template.concepts conceptList
+
+concept :: ConnectionPool -> ActionM ()
+concept pool = do
+    title <- param "concept"
+    topic <- liftIO $ runSqlPool (getConcept title) pool
+    case topic of
+        Nothing      -> text "No topic found"
+        Just concept -> template $ Template.concept concept
+
+
 topics :: ConnectionPool -> ActionM ()
 topics pool = do
     topicList <- liftIO $ runSqlPool getTopics pool
@@ -30,8 +45,3 @@ topic pool = do
     topic <- liftIO $ runSqlPool (getTopic title) pool
     case topic of Nothing                -> text "No topic found"
                   Just (topic, concepts) -> template $ Template.topic topic concepts
-
-concepts :: ConnectionPool -> ActionM ()
-concepts pool = do
-    conceptList <- liftIO $ runSqlPool getConcepts pool
-    template $ Template.concepts conceptList

@@ -25,6 +25,19 @@ getConcepts = do
     -- entityVal upwraps database entities.
     return $ map entityVal topics
 
+getConcept :: String -> SqlPersistT IO (Maybe Concept)
+getConcept title = do
+    -- Select all concepts in the DB
+    concepts <- select $
+        from $ \concept -> do
+        where_ (concept ^. ConceptTitle ==. (val . fromString) title)
+        return concept
+
+    -- Get the concept
+    return $ case concepts of
+        []        -> Nothing
+        concept:_ -> Just (entityVal concept)
+
 
 getTopics :: SqlPersistT IO [Topic]
 getTopics = do

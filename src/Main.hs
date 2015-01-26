@@ -32,3 +32,4 @@ app pool = do
     get "/topic" $ Handlers.topics pool
     get "/topic/:topic" $ Handlers.topic pool
     get "/concept" $ Handlers.concepts pool
+    get "/concept/:concept" $ Handlers.concept pool
