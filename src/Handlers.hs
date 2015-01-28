@@ -34,8 +34,8 @@ resource pool = do
         Just id -> do
             resource <- liftIO $ runSqlPool (getResource id) pool
             case resource of
-                Nothing       -> text "No resource found"
-                Just resource -> template $ Template.resource resource
+                Nothing                   -> text "No resource found"
+                Just (resource, concepts) -> template $ Template.resource resource concepts
 
 
 concepts :: ConnectionPool -> ActionM ()

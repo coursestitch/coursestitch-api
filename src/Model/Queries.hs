@@ -3,6 +3,7 @@ module Model.Queries where
 import Data.Int (Int64)
 
 import Data.String (fromString)
+import Data.List (unzip3, nub)
 import Data.Maybe (catMaybes)
 
 import Database.Persist (Entity, insert, get, entityVal, selectList)
@@ -16,13 +17,35 @@ group abs = case as of []   -> Nothing
                        a:as -> Just (a, catMaybes bs)
     where (as, bs) = unzip abs
 
+groups :: Eq a => [(a, b)] -> [(a, [b])]
+groups abs = [(a', [b | (a, b) <- abs, a == a']) | a' <- nub as]
+    where as = map fst abs
+
+joinMaybe :: (Maybe a, Maybe b) -> Maybe (a, b)
+joinMaybe (Nothing, _) = Nothing
+joinMaybe (_, Nothing) = Nothing
+joinMaybe (Just x, Just y) = Just (x, y)
 
 -- Select all Resources in the database
 getResources :: SqlPersistT IO [Resource]
 getResources = map entityVal `fmap` selectList [] []
 
-getResource :: Int64 -> SqlPersistT IO (Maybe Resource)
-getResource id = get $ toSqlKey id
+getResource :: Int64 -> SqlPersistT IO (Maybe (Resource, [(RelationshipType, [Concept])]))
+getResource id = do
+    -- Select resource with given id from the DB, and the concepts associated with it.
+    q <- select $
+        from $ \(resource `LeftOuterJoin` relationship `LeftOuterJoin` concept) -> do
+        on (just (resource ^. ResourceId) ==. relationship ?. RelationshipResource)
+        on (concept ?. ConceptId   ==. relationship ?. RelationshipConcept)
+        where_ (resource ^. ResourceId ==. (val . toSqlKey) id)
+        return (resource, relationship, concept)
+    
+    let (rs, rels, cs)  = unzip3 q
+    let rels' = map joinMaybe $ zip (map (fmap (relationshipRelationship . entityVal)) rels) (map (fmap entityVal) cs)
+    let rs'   = fmap (\(r, rels) -> (entityVal r, groups rels)) $ group (zip rs rels')
+
+    -- Group together the resources into a list
+    return rs'
 
 
 -- Select all Concepts in the database
