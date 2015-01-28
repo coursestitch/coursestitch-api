@@ -19,3 +19,9 @@ input label name value = p_ $ do
     label_ $ toHtml label
     " "
     input_ [name_ name, value_ $ fromMaybe "" value]
+
+textInput :: Text -> Text -> Maybe Text -> Html ()
+textInput label name value = p_ $ do
+    label_ $ toHtml label
+    " "
+    textarea_ [name_ name] (toHtml $ fromMaybe "" value)
