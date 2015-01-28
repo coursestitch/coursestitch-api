@@ -37,6 +37,10 @@ resource pool = do
                 Nothing                   -> text "No resource found"
                 Just (resource, concepts) -> template $ Template.resource resource concepts
 
+resourceNew :: ConnectionPool -> ActionM ()
+resourceNew pool = do
+    template $ Template.resourceForm Nothing
+
 
 concepts :: ConnectionPool -> ActionM ()
 concepts pool = do

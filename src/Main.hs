@@ -29,9 +29,13 @@ main = do
 app :: ConnectionPool -> ScottyM ()
 app pool = do
     get "/" $ Handlers.root pool
+
     get "/resource" $ Handlers.resources pool
+    get "/resource/new" $ Handlers.resourceNew pool
     get "/resource/:resource" $ Handlers.resource pool
+
     get "/concept" $ Handlers.concepts pool
     get "/concept/:concept" $ Handlers.concept pool
+
     get "/topic" $ Handlers.topics pool
     get "/topic/:topic" $ Handlers.topic pool
