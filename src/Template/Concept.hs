@@ -9,6 +9,7 @@ import Lucid
 import Model
 
 import Template.Template
+import  {-# SOURCE #-} Template.Resource (resourceSimple)
 
 concepts :: [Concept] -> Html ()
 concepts cs = unorderedList $ map conceptSimple cs
@@ -30,7 +31,7 @@ conceptResources rel resources = do
     conceptResourcesHeading rel
     case resources of
         [] -> conceptResourcesMissing rel
-        resources -> unorderedList $ map resourceSimplex resources
+        resources -> unorderedList $ map resourceSimple resources
 
 
 conceptUri concept = mappend "/concept/" (conceptTitle concept)
@@ -40,12 +41,3 @@ conceptHeading = h1_ . toHtml . conceptTitle
 
 conceptResourcesHeading rel = h2_ ("Resources that " `mappend` (fromString . show) rel)
 conceptResourcesMissing rel = p_ ("There are no resources that " `mappend` (fromString . show) rel `mappend` " this concept")
-
-
-resourceSimplex :: Resource -> Html ()
-resourceSimplex resource = do
-    resourceLinkx resource $ resourceHeadingx resource
-
-resourceUrix resource = mappend "/resource/" (resourceTitle resource)
-resourceLinkx resource html = link (resourceUrix resource) html
-resourceHeadingx = h1_ . toHtml . resourceTitle
