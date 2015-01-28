@@ -40,5 +40,5 @@ conceptLink concept html = link (conceptUri concept) html
 
 conceptHeading = h1_ . toHtml . conceptTitle . entityVal
 
-conceptResourcesHeading rel = h2_ ("Resources that " `mappend` (fromString . show) rel)
+conceptResourcesHeading rel = h2_ ((fromString . show) rel `mappend` " by")
 conceptResourcesMissing rel = p_ ("There are no resources that " `mappend` (fromString . show) rel `mappend` " this concept")

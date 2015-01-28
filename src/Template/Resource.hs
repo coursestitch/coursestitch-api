@@ -46,4 +46,4 @@ resourceQuote = blockquote_ . toHtml . resourcePreview . entityVal
 resourceExternalLink resource = link ((resourceUrl . entityVal) resource)
 
 resourceConceptsHeading rel = h2_ ("Concepts " `mappend` (fromString . show) rel)
-resourceConceptsMissing rel = p_ ("There are no concepts that " `mappend` (fromString . show) rel `mappend` " this resource")
+resourceConceptsMissing rel = p_ ("There are no concepts " `mappend` (fromString . show) rel `mappend` " by this resource")
