@@ -2,6 +2,7 @@
 
 module Handlers where
 
+import Text.Read (readMaybe)
 import Control.Monad.IO.Class (liftIO)
 import Data.String (fromString)
 import Web.Scotty (ActionM, text, param)
@@ -20,6 +21,23 @@ root pool = do
     text (fromString . show $ topics)
 
 
+resources :: ConnectionPool -> ActionM ()
+resources pool = do
+    resourceList <- liftIO $ runSqlPool getResources pool
+    template $ Template.resources resourceList
+
+resource :: ConnectionPool -> ActionM ()
+resource pool = do
+    id <- param "resource"
+    case readMaybe id of
+        Nothing -> text "Resources should be of the form /resource/<integer>"
+        Just id -> do
+            resource <- liftIO $ runSqlPool (getResource id) pool
+            case resource of
+                Nothing       -> text "No resource found"
+                Just resource -> template $ Template.resource resource
+
+
 concepts :: ConnectionPool -> ActionM ()
 concepts pool = do
     conceptList <- liftIO $ runSqlPool getConcepts pool
@@ -28,9 +46,9 @@ concepts pool = do
 concept :: ConnectionPool -> ActionM ()
 concept pool = do
     title <- param "concept"
-    topic <- liftIO $ runSqlPool (getConcept title) pool
-    case topic of
-        Nothing      -> text "No topic found"
+    concept <- liftIO $ runSqlPool (getConcept title) pool
+    case concept of
+        Nothing      -> text "No concept found"
         Just concept -> template $ Template.concept concept
 
 

@@ -1,10 +1,12 @@
 module Model.Queries where
 
+import Data.Int (Int64)
+
 import Data.String (fromString)
 import Data.Maybe (catMaybes)
 
 import Database.Persist (Entity, insert, get, entityVal, selectList)
-import Database.Persist.Sql (SqlPersistT)
+import Database.Persist.Sql (SqlPersistT, toSqlKey)
 import Database.Esqueleto (select, from, where_, (^.), (?.), (==.), on, InnerJoin(..), LeftOuterJoin(..), val, just)
 
 import Model
@@ -13,6 +15,14 @@ group :: [(a, Maybe b)] -> Maybe (a, [b])
 group abs = case as of []   -> Nothing
                        a:as -> Just (a, catMaybes bs)
     where (as, bs) = unzip abs
+
+
+-- Select all Resources in the database
+getResources :: SqlPersistT IO [Resource]
+getResources = map entityVal `fmap` selectList [] []
+
+getResource :: Int64 -> SqlPersistT IO (Maybe Resource)
+getResource id = get $ toSqlKey id
 
 
 -- Select all Concepts in the database
