@@ -23,12 +23,10 @@ resourceSimple resource = do
     resourceLink resource $ resourceHeading resource
 
 resourceForm :: Maybe (Entity Resource) -> Html ()
-resourceForm resource = do
-    form_ $ do
-        fieldset_ $ do
-            input "URL" "url" $ fmap (resourceUrl . entityVal) resource
-            input "Title" "title" $ fmap (resourceTitle . entityVal) resource
-            
+resourceForm resource = form_ $ fieldset_ $ do
+    input "URL" "url" $ get resourceUrl
+    input "Title" "title" $ get resourceTitle
+    where get f = fmap (f . entityVal) resource
 
 resourceDetailed :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
 resourceDetailed resource rels = do
