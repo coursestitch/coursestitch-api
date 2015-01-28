@@ -28,14 +28,14 @@ joinMaybe (Just x, Just y) = Just (x, y)
 
 relationships zs = zs'
     where (xs, rels, ys) = unzip3 zs
-          rels' = map joinMaybe $ zip (map (fmap (relationshipRelationship . entityVal)) rels) (map (fmap entityVal) ys)
-          zs'   = fmap (\(x, rels) -> (entityVal x, groups rels)) $ group (zip xs rels')
+          rels' = map joinMaybe $ zip (map (fmap (relationshipRelationship . entityVal)) rels) ys
+          zs'   = fmap (\(x, rels) -> (x, groups rels)) $ group (zip xs rels')
 
 -- Select all Resources in the database
-getResources :: SqlPersistT IO [Resource]
-getResources = map entityVal `fmap` selectList [] []
+getResources :: SqlPersistT IO [Entity Resource]
+getResources = selectList [] []
 
-getResource :: Int64 -> SqlPersistT IO (Maybe (Resource, [(RelationshipType, [Concept])]))
+getResource :: Int64 -> SqlPersistT IO (Maybe (Entity Resource, [(RelationshipType, [Entity Concept])]))
 getResource id = do
     -- Select resource with given id from the DB, and the concepts associated with it.
     rs <- select $
@@ -50,10 +50,10 @@ getResource id = do
 
 
 -- Select all Concepts in the database
-getConcepts :: SqlPersistT IO [Concept]
-getConcepts = map entityVal `fmap` selectList [] []
+getConcepts :: SqlPersistT IO [Entity Concept]
+getConcepts = selectList [] []
 
-getConcept :: String -> SqlPersistT IO (Maybe (Concept, [(RelationshipType, [Resource])]))
+getConcept :: String -> SqlPersistT IO (Maybe (Entity Concept, [(RelationshipType, [Entity Resource])]))
 getConcept title = do
     -- Select concept with given title from the DB, and the resources associated with it.
     cs <- select $
@@ -68,10 +68,10 @@ getConcept title = do
 
 
 -- Select all Topics in the database
-getTopics :: SqlPersistT IO [Topic]
-getTopics = map entityVal `fmap` selectList [] []
+getTopics :: SqlPersistT IO [Entity Topic]
+getTopics = selectList [] []
 
-getTopic :: String -> SqlPersistT IO (Maybe (Topic, [Concept]))
+getTopic :: String -> SqlPersistT IO (Maybe (Entity Topic, [Entity Concept]))
 getTopic title = do
     -- Select topic with given title from the DB, and the concepts associated with them.
     tcs <- select $
@@ -81,5 +81,4 @@ getTopic title = do
         return (topic, concept)
 
     -- Group together the concepts into a list
-    return $ case group tcs of Nothing      -> Nothing
-                               Just (t, cs) -> Just (entityVal t, map entityVal cs)
+    return $ group tcs

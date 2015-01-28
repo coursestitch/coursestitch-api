@@ -2,5 +2,6 @@ module Template.Resource where
 
 import Lucid
 import Model
+import Database.Persist (Entity)
 
-resourceSimple :: Resource -> Html ()
+resourceSimple :: Entity Resource -> Html ()
