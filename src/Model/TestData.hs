@@ -19,7 +19,7 @@ testData = do
         resourceMedia = "text",
         resourceUrl   = "http://example.com/howtostring.html",
         resourceCourse = "Example.com Enterprise Programming Tutorials",
-        resourceSummary = "blah blah blah",
+        resourceSummary = "This resource just says blah",
         resourcePreview = "blah blah blah",
         resourceKeywords = "strings, stringing, str"
      }

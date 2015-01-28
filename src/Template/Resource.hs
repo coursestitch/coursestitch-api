@@ -25,6 +25,8 @@ resourceSimple resource = do
 resourceDetailed :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
 resourceDetailed resource rels = do
     resourceLink resource $ resourceHeading resource
+    resourceText resource
+    resourceExternalLink resource $ resourceQuote resource
     mconcat $ map (uncurry resourceConcepts) rels
     
 resourceConcepts :: RelationshipType -> [Entity Concept] -> Html ()
@@ -39,6 +41,9 @@ resourceUri resource = mappend "/resource/" ((fromString . show . entityId) reso
 resourceLink resource html = link (resourceUri resource) html
 
 resourceHeading = h1_ . toHtml . resourceTitle . entityVal
+resourceText = p_ . toHtml . resourceSummary . entityVal
+resourceQuote = blockquote_ . toHtml . resourcePreview . entityVal
+resourceExternalLink resource = link ((resourceUrl . entityVal) resource)
 
 resourceConceptsHeading rel = h2_ ("Concepts " `mappend` (fromString . show) rel)
 resourceConceptsMissing rel = p_ ("There are no concepts that " `mappend` (fromString . show) rel `mappend` " this resource")
