@@ -12,15 +12,15 @@ import Template.Template
 concepts :: [Concept] -> Html ()
 concepts cs = unorderedList $ map conceptSimple cs
 
-concept :: Concept -> Html ()
-concept concept = article_ $ conceptDetailed concept
+concept :: Concept  -> [(RelationshipType, [Resource])] -> Html ()
+concept concept resources = article_ $ conceptDetailed concept resources
 
 conceptSimple :: Concept -> Html ()
 conceptSimple concept = do
     conceptLink concept $ conceptHeading concept
 
-conceptDetailed :: Concept -> Html ()
-conceptDetailed concept = do
+conceptDetailed :: Concept -> [(RelationshipType, [Resource])] -> Html ()
+conceptDetailed concept rels = do
     conceptLink concept $ conceptHeading concept
 
 conceptUri concept = mappend "/concept/" (conceptTitle concept)

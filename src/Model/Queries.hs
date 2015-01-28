@@ -26,6 +26,11 @@ joinMaybe (Nothing, _) = Nothing
 joinMaybe (_, Nothing) = Nothing
 joinMaybe (Just x, Just y) = Just (x, y)
 
+relationships zs = zs'
+    where (xs, rels, ys) = unzip3 zs
+          rels' = map joinMaybe $ zip (map (fmap (relationshipRelationship . entityVal)) rels) (map (fmap entityVal) ys)
+          zs'   = fmap (\(x, rels) -> (entityVal x, groups rels)) $ group (zip xs rels')
+
 -- Select all Resources in the database
 getResources :: SqlPersistT IO [Resource]
 getResources = map entityVal `fmap` selectList [] []
@@ -33,37 +38,33 @@ getResources = map entityVal `fmap` selectList [] []
 getResource :: Int64 -> SqlPersistT IO (Maybe (Resource, [(RelationshipType, [Concept])]))
 getResource id = do
     -- Select resource with given id from the DB, and the concepts associated with it.
-    q <- select $
+    rs <- select $
         from $ \(resource `LeftOuterJoin` relationship `LeftOuterJoin` concept) -> do
         on (just (resource ^. ResourceId) ==. relationship ?. RelationshipResource)
         on (concept ?. ConceptId   ==. relationship ?. RelationshipConcept)
         where_ (resource ^. ResourceId ==. (val . toSqlKey) id)
         return (resource, relationship, concept)
     
-    let (rs, rels, cs)  = unzip3 q
-    let rels' = map joinMaybe $ zip (map (fmap (relationshipRelationship . entityVal)) rels) (map (fmap entityVal) cs)
-    let rs'   = fmap (\(r, rels) -> (entityVal r, groups rels)) $ group (zip rs rels')
-
     -- Group together the resources into a list
-    return rs'
+    return $ relationships rs
 
 
 -- Select all Concepts in the database
 getConcepts :: SqlPersistT IO [Concept]
 getConcepts = map entityVal `fmap` selectList [] []
 
-getConcept :: String -> SqlPersistT IO (Maybe Concept)
+getConcept :: String -> SqlPersistT IO (Maybe (Concept, [(RelationshipType, [Resource])]))
 getConcept title = do
-    -- Select all concepts in the DB
-    concepts <- select $
-        from $ \concept -> do
+    -- Select concept with given title from the DB, and the resources associated with it.
+    cs <- select $
+        from $ \(concept `LeftOuterJoin` relationship `LeftOuterJoin` resource) -> do
+        on (just (concept ^. ConceptId) ==. relationship ?. RelationshipConcept)
+        on (resource ?. ResourceId   ==. relationship ?. RelationshipResource)
         where_ (concept ^. ConceptTitle ==. (val . fromString) title)
-        return concept
-
-    -- Get the concept
-    return $ case concepts of
-        []        -> Nothing
-        concept:_ -> Just (entityVal concept)
+        return (concept, relationship, resource)
+    
+    -- Group together the concepts into a list
+    return $ relationships cs
 
 
 -- Select all Topics in the database

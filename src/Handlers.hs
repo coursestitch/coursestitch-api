@@ -48,8 +48,8 @@ concept pool = do
     title <- param "concept"
     concept <- liftIO $ runSqlPool (getConcept title) pool
     case concept of
-        Nothing      -> text "No concept found"
-        Just concept -> template $ Template.concept concept
+        Nothing                   -> text "No concept found"
+        Just (concept, resources) -> template $ Template.concept concept resources
 
 
 topics :: ConnectionPool -> ActionM ()
