@@ -12,7 +12,7 @@ import System.Environment (lookupEnv)
 import Data.String (fromString)
 
 import Network.Wai.Middleware.Static (staticPolicy, noDots, (>->), addBase)
-import Web.Scotty (ScottyM, scotty, get, middleware)
+import Web.Scotty (ScottyM, scotty, get, put, middleware)
 
 import qualified Handlers
 import Model (migrateAll)
@@ -35,6 +35,7 @@ app pool = do
     get "/resource" $ Handlers.resources pool
     get "/resource/new" $ Handlers.resourceNew pool
     get "/resource/:resource" $ Handlers.resource pool
+    put "/resource/:resource" $ Handlers.resourceUpdate pool
     get "/resource/:resource/edit" $ Handlers.resourceEdit pool
 
     get "/concept" $ Handlers.concepts pool

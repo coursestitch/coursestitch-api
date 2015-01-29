@@ -49,6 +49,12 @@ getResource id = do
     -- Group together the resources into a list
     return $ relationships rs
 
+-- Update a resource
+editResource :: Int64 -> Resource -> SqlPersistT IO Resource
+editResource id resource = do
+    replace (toSqlKey id) resource
+    return resource
+
 
 -- Select all Concepts in the database
 getConcepts :: SqlPersistT IO [Entity Concept]

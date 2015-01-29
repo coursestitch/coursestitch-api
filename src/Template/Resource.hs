@@ -21,6 +21,11 @@ resources cs = unorderedList $ map resourceSimple cs
 resource :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
 resource resource concepts = article_ $ resourceDetailed resource concepts
 
+resourceUpdated :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
+resourceUpdated r cs = do
+    p_ "This resource was updated successfully"
+    resource r cs
+
 resourceSimple :: Entity Resource -> Html ()
 resourceSimple resource = do
     resourceLink resource $ resourceHeading resource

@@ -23,6 +23,29 @@ resource pool = do
                 Nothing                   -> notFound404 "resource"
                 Just (resource, concepts) -> template $ Template.resource resource concepts
 
+resourceUpdate :: ConnectionPool -> ActionM ()
+resourceUpdate pool = do
+    id       <- param "resource"
+
+    title    <- param "title"
+    media    <- param "media"
+    url      <- param "url"
+    course   <- param "course"
+    summary  <- param "summary"
+    preview  <- param "preview"
+    keywords <- param "keywords"
+
+    let resource = Resource title media url course summary preview keywords
+
+    case readMaybe id of
+        Nothing -> badRequest400 "Resources should be of the form /resource/<integer>"
+        Just id -> do
+            liftIO $ runSqlPool (editResource id resource) pool
+            resource <- liftIO $ runSqlPool (getResource id) pool
+            case resource of
+                Nothing                   -> notFound404 "resource"
+                Just (resource, concepts) -> template $ Template.resourceUpdated resource concepts
+
 resourceNew :: ConnectionPool -> ActionM ()
 resourceNew pool = do
     template $ Template.resourceForm Nothing
