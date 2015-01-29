@@ -30,6 +30,7 @@ resourceForm resource = do
     form_ [action_ uri, method_ method] $ do
         fieldset_ $ do
             input "URL" "url" $ get resourceUrl
+            input "Media" "media" $ get resourceMedia
             input "Title" "title" $ get resourceTitle
             input "Course" "course" $ get resourceCourse
             textInput "Summary" "summary" $ get resourceSummary
