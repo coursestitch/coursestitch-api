@@ -7,7 +7,7 @@ import Data.String (fromString)
 import Data.Monoid (mconcat)
 import Control.Monad.IO.Class (liftIO)
 
-import Network.HTTP.Types.Status (status404)
+import Network.HTTP.Types.Status (status404, status400)
 import Web.Scotty (ActionM, text, param, status)
 
 import Database.Persist.Sql (ConnectionPool, runSqlPool)
@@ -21,6 +21,11 @@ import Template (template)
 notFound404 entity = do
     status status404
     text $ mconcat ["No ", entity, " found"]
+
+badRequest400 msg = do
+    status status400
+    text msg
+
 
 root :: ConnectionPool -> ActionM ()
 root pool = do
@@ -37,7 +42,7 @@ resource :: ConnectionPool -> ActionM ()
 resource pool = do
     id <- param "resource"
     case readMaybe id of
-        Nothing -> text "Resources should be of the form /resource/<integer>"
+        Nothing -> badRequest400 "Resources should be of the form /resource/<integer>"
         Just id -> do
             resource <- liftIO $ runSqlPool (getResource id) pool
             case resource of
@@ -52,7 +57,7 @@ resourceEdit :: ConnectionPool -> ActionM ()
 resourceEdit pool = do
     id <- param "resource"
     case readMaybe id of
-        Nothing -> text "Resources should be of the form /resource/<integer>"
+        Nothing -> badRequest400 "Resources should be of the form /resource/<integer>"
         Just id -> do
             resourceConcepts <- liftIO $ runSqlPool (getResource id) pool
             let resource = fmap fst resourceConcepts
