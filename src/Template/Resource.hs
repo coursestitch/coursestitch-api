@@ -3,7 +3,10 @@
 module Template.Resource where
 
 import Data.String (fromString)
+import Data.Text.Encoding (decodeUtf8)
 import Data.Monoid (mappend, mconcat)
+
+import Network.HTTP.Types.Method (methodGet, methodPost, methodPut, methodDelete)
 
 import Lucid
 import Model
@@ -24,7 +27,7 @@ resourceSimple resource = do
 
 resourceForm :: Maybe (Entity Resource) -> Html ()
 resourceForm resource = do
-    form_ $ do
+    form_ [action_ uri, method_ method] $ do
         fieldset_ $ do
             input "URL" "url" $ get resourceUrl
             input "Title" "title" $ get resourceTitle
@@ -34,6 +37,12 @@ resourceForm resource = do
             textInput "Preview" "preview" $ get resourcePreview
             input "Keywords" "keywords" $ get resourceKeywords
     where get f = fmap (f . entityVal) resource
+          uri = case resource of
+                Just resource -> resourceUri resource
+                Nothing       -> "/resource"
+          method = case resource of
+                Just _  -> decodeUtf8 methodPut
+                Nothing -> decodeUtf8 methodPost
 
 resourceDetailed :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
 resourceDetailed resource rels = do
