@@ -49,4 +49,16 @@ Relationship
     concept      ConceptId
     UniqueResourceConcept resource concept
     deriving Show
+
+User
+    name Text
+    UniqueName name
+    hash Text
+    deriving Show
+
+Session
+    user  UserId
+    token Token
+    UniqueUserToken user token
+    deriving Show
 |]

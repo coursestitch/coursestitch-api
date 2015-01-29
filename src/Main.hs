@@ -40,3 +40,6 @@ app pool = do
 
     get "/topic" $ Handlers.topics pool
     get "/topic/:topic" $ Handlers.topic pool
+
+    get "/user" $ Handlers.users pool
+    get "/user/:user" $ Handlers.user pool

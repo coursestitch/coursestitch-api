@@ -24,4 +24,5 @@ testData = do
         resourceKeywords = "strings, stringing, str"
      }
     insert $ Relationship stringGuide Taught howToString
+    insert $ User "sally" "sdlj7589fshou47"
     return ()

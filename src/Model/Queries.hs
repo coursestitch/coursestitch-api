@@ -3,6 +3,7 @@ module Model.Queries where
 import Data.Int (Int64)
 
 import Data.String (fromString)
+import Data.Text (Text)
 import Data.List (unzip3, nub)
 import Data.Maybe (catMaybes, listToMaybe)
 
@@ -82,3 +83,20 @@ getTopic title = do
 
     -- Group together the concepts into a list
     return $ group tcs
+
+-- Select all Users in the database
+getUsers :: SqlPersistT IO [Entity User]
+getUsers = selectList [] []
+
+-- Get a single user by their unique name
+getUser :: Text -> SqlPersistT IO (Maybe (Entity User))
+getUser name = getBy $ UniqueName name
+
+-- For authentication purposes, see whether we have a Session active for a User
+-- with the given Token.
+getUserForToken :: Token -> SqlPersistT IO (Maybe (Entity User))
+getUserForToken token = fmap listToMaybe $ select $
+    from $ \(user `InnerJoin` session) -> do
+    on (user ^. UserId ==. session ^. SessionUser)
+    where_ (session ^. SessionToken ==. val token)
+    return user
