@@ -37,6 +37,9 @@ resourceForm resource = do
             textInput "Preview" "preview" $ get resourcePreview
             input "Keywords" "keywords" $ get resourceKeywords
         input_ [type_ "submit"] 
+
+    script_ [src_ "/js/form-methods.js"] ("" :: String)
+
     where get f = fmap (f . entityVal) resource
           uri = case resource of
                 Just resource -> resourceUri resource
