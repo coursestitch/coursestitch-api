@@ -36,6 +36,7 @@ resourceForm resource = do
         fieldset_ $ do
             textInput "Preview" "preview" $ get resourcePreview
             input "Keywords" "keywords" $ get resourceKeywords
+        input_ [type_ "submit"] 
     where get f = fmap (f . entityVal) resource
           uri = case resource of
                 Just resource -> resourceUri resource
