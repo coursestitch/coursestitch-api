@@ -41,6 +41,16 @@ resourceNew :: ConnectionPool -> ActionM ()
 resourceNew pool = do
     template $ Template.resourceForm Nothing
 
+resourceEdit :: ConnectionPool -> ActionM ()
+resourceEdit pool = do
+    id <- param "resource"
+    case readMaybe id of
+        Nothing -> text "Resources should be of the form /resource/<integer>"
+        Just id -> do
+            resourceConcepts <- liftIO $ runSqlPool (getResource id) pool
+            let resource = fmap fst resourceConcepts
+            template $ Template.resourceForm resource
+
 
 concepts :: ConnectionPool -> ActionM ()
 concepts pool = do

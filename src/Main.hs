@@ -33,6 +33,7 @@ app pool = do
     get "/resource" $ Handlers.resources pool
     get "/resource/new" $ Handlers.resourceNew pool
     get "/resource/:resource" $ Handlers.resource pool
+    get "/resource/:resource/edit" $ Handlers.resourceEdit pool
 
     get "/concept" $ Handlers.concepts pool
     get "/concept/:concept" $ Handlers.concept pool
