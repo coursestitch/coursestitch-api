@@ -4,11 +4,11 @@ import Data.Int (Int64)
 
 import Data.String (fromString)
 import Data.List (unzip3, nub)
-import Data.Maybe (catMaybes)
+import Data.Maybe (catMaybes, listToMaybe)
 
 import Database.Persist (Entity, insert, get, entityVal, selectList)
 import Database.Persist.Sql (SqlPersistT, toSqlKey)
-import Database.Esqueleto (select, from, where_, (^.), (?.), (==.), on, InnerJoin(..), LeftOuterJoin(..), val, just)
+import Database.Esqueleto
 
 import Model
 

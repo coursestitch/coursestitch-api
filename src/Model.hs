@@ -2,7 +2,7 @@ module Model (
     module Model.Tables,
     module Model.Types,
     entityId
- ) where
+) where
 
 import Model.Tables
 import Model.Types

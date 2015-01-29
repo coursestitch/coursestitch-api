@@ -28,7 +28,7 @@ main = do
 
 app :: ConnectionPool -> ScottyM ()
 app pool = do
-    get "/" $ Handlers.root pool
+    get "/" $ Handlers.root
 
     get "/resource" $ Handlers.resources pool
     get "/resource/new" $ Handlers.resourceNew pool
