@@ -3,9 +3,12 @@
 module Handlers where
 
 import Text.Read (readMaybe)
-import Control.Monad.IO.Class (liftIO)
 import Data.String (fromString)
-import Web.Scotty (ActionM, text, param)
+import Data.Monoid (mconcat)
+import Control.Monad.IO.Class (liftIO)
+
+import Network.HTTP.Types.Status (status404)
+import Web.Scotty (ActionM, text, param, status)
 
 import Database.Persist.Sql (ConnectionPool, runSqlPool)
 
@@ -14,6 +17,10 @@ import Model.Queries
 
 import qualified Template
 import Template (template)
+
+notFound404 entity = do
+    status status404
+    text $ mconcat ["No ", entity, " found"]
 
 root :: ConnectionPool -> ActionM ()
 root pool = do
@@ -34,7 +41,7 @@ resource pool = do
         Just id -> do
             resource <- liftIO $ runSqlPool (getResource id) pool
             case resource of
-                Nothing                   -> text "No resource found"
+                Nothing                   -> notFound404 "resource"
                 Just (resource, concepts) -> template $ Template.resource resource concepts
 
 resourceNew :: ConnectionPool -> ActionM ()
@@ -62,7 +69,7 @@ concept pool = do
     title <- param "concept"
     concept <- liftIO $ runSqlPool (getConcept title) pool
     case concept of
-        Nothing                   -> text "No concept found"
+        Nothing                   -> notFound404 "concept"
         Just (concept, resources) -> template $ Template.concept concept resources
 
 
@@ -75,5 +82,5 @@ topic :: ConnectionPool -> ActionM ()
 topic pool = do
     title <- param "topic"
     topic <- liftIO $ runSqlPool (getTopic title) pool
-    case topic of Nothing                -> text "No topic found"
+    case topic of Nothing                -> notFound404 "topic" 
                   Just (topic, concepts) -> template $ Template.topic topic concepts
