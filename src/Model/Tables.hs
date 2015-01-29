@@ -54,6 +54,7 @@ User
     name Text
     UniqueName name
     hash Text
+    salt Text
     deriving Show
 
 Session
