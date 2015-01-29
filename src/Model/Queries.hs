@@ -7,7 +7,8 @@ import Data.Text (Text)
 import Data.List (unzip3, nub)
 import Data.Maybe (catMaybes, listToMaybe)
 
-import Database.Persist (Entity, insert, get, entityVal, selectList)
+import qualified Database.Persist as P
+import Database.Persist (Entity, insert, get, entityVal, selectList, deleteWhere)
 import Database.Persist.Sql (SqlPersistT, toSqlKey)
 import Database.Esqueleto
 
@@ -84,6 +85,7 @@ getTopic title = do
     -- Group together the concepts into a list
     return $ group tcs
 
+
 -- Select all Users in the database
 getUsers :: SqlPersistT IO [Entity User]
 getUsers = selectList [] []
@@ -100,3 +102,9 @@ getUserForToken token = fmap listToMaybe $ select $
     on (user ^. UserId ==. session ^. SessionUser)
     where_ (session ^. SessionToken ==. val token)
     return user
+
+getSession :: Token -> SqlPersistT IO (Maybe (Entity Session))
+getSession token = fmap listToMaybe $ selectList [SessionToken P.==. token] []
+
+deleteSessions :: Token -> SqlPersistT IO ()
+deleteSessions token = deleteWhere [SessionToken P.==. token]

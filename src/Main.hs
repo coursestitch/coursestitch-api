@@ -12,7 +12,7 @@ import System.Environment (lookupEnv)
 import Data.String (fromString)
 
 import Network.Wai.Middleware.Static (staticPolicy, noDots, (>->), addBase)
-import Web.Scotty (ScottyM, scotty, get, middleware)
+import Web.Scotty (ScottyM, scotty, get, put, post, delete, middleware)
 
 import qualified Handlers
 import Model (migrateAll)
@@ -45,5 +45,7 @@ app pool = do
 
     get "/user" $ Handlers.users pool
     get "/user/:user" $ Handlers.user pool
+    post "/login" $ Handlers.login pool
+    delete "/login" $ Handlers.logout pool
 
     middleware $ staticPolicy (noDots >-> addBase "./static")
