@@ -16,7 +16,7 @@ var formMethods = function(options) {
                 onsubmit();
             // Perform request
             request.open(form.attributes.method.value, form.action);
-            request.send();
+            request.send(new FormData(form));
         };
 
         // When the request is done...
