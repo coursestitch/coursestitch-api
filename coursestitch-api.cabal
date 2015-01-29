@@ -20,6 +20,7 @@ executable coursestitch-api
                        esqueleto,
                        lucid >=2.6.1 && <2.7,
                        scotty,
+                       wai-middleware-static,
                        http-types,
                        transformers, monad-logger,
                        template-haskell,

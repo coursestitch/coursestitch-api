@@ -10,7 +10,9 @@ import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Logger (runNoLoggingT)
 import System.Environment (lookupEnv)
 import Data.String (fromString)
-import Web.Scotty (ScottyM, scotty, get)
+
+import Network.Wai.Middleware.Static (staticPolicy, noDots, (>->), addBase)
+import Web.Scotty (ScottyM, scotty, get, middleware)
 
 import qualified Handlers
 import Model (migrateAll)
@@ -43,3 +45,5 @@ app pool = do
 
     get "/user" $ Handlers.users pool
     get "/user/:user" $ Handlers.user pool
+
+    middleware $ staticPolicy (noDots >-> addBase "./static")
