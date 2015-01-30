@@ -56,6 +56,10 @@ editResource id resource = do
     replace (toSqlKey id) resource
     return resource
 
+-- Delete a resource
+deleteResource :: Int64 -> SqlPersistT IO ()
+deleteResource id = deleteWhere [ResourceId P.==. toSqlKey id]
+
 
 -- Select all Concepts in the database
 getConcepts :: SqlPersistT IO [Entity Concept]

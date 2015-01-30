@@ -36,6 +36,7 @@ app pool = do
     get "/resource/new" $ Handlers.resourceNew pool
     get "/resource/:resource" $ Handlers.resource pool
     put "/resource/:resource" $ Handlers.resourceUpdate pool
+    delete "/resource/:resource" $ Handlers.resourceDelete pool
     get "/resource/:resource/edit" $ Handlers.resourceEdit pool
 
     get "/concept" $ Handlers.concepts pool

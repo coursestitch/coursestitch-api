@@ -23,7 +23,12 @@ resource resource concepts = article_ $ resourceDetailed resource concepts
 
 resourceUpdated :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
 resourceUpdated r cs = do
-    p_ "This resource was updated successfully"
+    p_ $ mconcat [resourceUri r, " was updated successfully"]
+    resource r cs
+
+resourceDeleted :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
+resourceDeleted r cs = do
+    p_ $ mconcat [resourceUri r, " was deleted"]
     resource r cs
 
 resourceSimple :: Entity Resource -> Html ()

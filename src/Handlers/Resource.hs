@@ -59,3 +59,16 @@ resourceEdit pool = do
             resourceConcepts <- liftIO $ runSqlPool (getResource id) pool
             let resource = fmap fst resourceConcepts
             template $ Template.resourceForm resource
+
+resourceDelete :: ConnectionPool -> ActionM ()
+resourceDelete pool = do
+    id <- param "resource"
+    case readMaybe id of
+        Nothing -> badRequest400 "Resources should be of the form /resource/<integer>"
+        Just id -> do
+            resource <- liftIO $ runSqlPool (getResource id) pool
+            case resource of
+                Nothing                   -> notFound404 "resource"
+                Just (resource, concepts) -> do
+                    liftIO $ runSqlPool (deleteResource id) pool
+                    template $ Template.resourceDeleted resource concepts
