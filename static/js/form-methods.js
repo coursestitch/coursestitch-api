@@ -22,12 +22,16 @@ var formMethods = function(options) {
         // On form submission...
         var onsubmit = form.onsubmit;
         var doRequest = function(event) {
-            // Stop the form from submitting
-            if (event)
-                event.preventDefault();
             // Do the onsubmit events
             if (onsubmit)
                 onsubmit();
+            // Don't do anything for methods that already work
+            var method = form.attributes.method.value;
+            if (method === "GET" || method == "POST")
+                return;
+            // Stop the form from submitting
+            if (event)
+                event.preventDefault();
             // Update the page on request completion 
             if (options.update) {
                 var update = function() {
