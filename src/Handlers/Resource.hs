@@ -15,20 +15,17 @@ resources pool = do
     resourceList <- liftIO $ runSqlPool getResources pool
     template $ Template.resources resourceList
 
-resource :: ConnectionPool -> ActionM ()
-resource pool = do
-    id <- param "resource"
-    case readMaybe id of
-        Nothing -> badRequest400 "Resources should be of the form /resource/<integer>"
-        Just id -> do
-            resource <- liftIO $ runSqlPool (getResource id) pool
-            case resource of
-                Nothing                   -> notFound404 "resource"
-                Just (resource, concepts) -> template $ Template.resource resource concepts
-
 resourceNew :: ConnectionPool -> ActionM ()
 resourceNew pool = do
     template $ Template.resourceForm Nothing
+
+resource :: ConnectionPool -> ActionM ()
+resource pool = resourceAction pool $ \id resource concepts -> do
+    template $ Template.resource resource concepts
+
+resourceEdit :: ConnectionPool -> ActionM ()
+resourceEdit pool = resourceAction pool $ \id resource concepts -> do
+    template $ Template.resourceForm $ Just resource
 
 resourceUpdate :: ConnectionPool -> ActionM ()
 resourceUpdate pool = do
@@ -48,10 +45,6 @@ resourceUpdate pool = do
             case resource' of
                 Nothing                   -> notFound404 "resource"
                 Just (resource, concepts) -> template $ Template.resourceUpdated resource concepts
-
-resourceEdit :: ConnectionPool -> ActionM ()
-resourceEdit pool = resourceAction pool $ \id resource concepts -> do
-    template $ Template.resourceForm $ Just resource
 
 resourceDelete :: ConnectionPool -> ActionM ()
 resourceDelete pool = do
