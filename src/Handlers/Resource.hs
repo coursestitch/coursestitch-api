@@ -21,15 +21,7 @@ resourceNew pool = do
 
 resourceCreate :: ConnectionPool -> ActionM ()
 resourceCreate pool = do
-    title    <- param "title"
-    media    <- param "media"
-    url      <- param "url"
-    course   <- param "course"
-    summary  <- param "summary"
-    preview  <- param "preview"
-    keywords <- param "keywords"
-
-    let createdResource = Resource title media url course summary preview keywords
+    createdResource <- resourceFromParams
 
     resource <- liftIO $ runSqlPool (newResource createdResource) pool
     template $ Template.resourceCreated resource []
@@ -44,15 +36,7 @@ resourceEdit pool = resourceAction pool $ \id resource concepts -> do
 
 resourceUpdate :: ConnectionPool -> ActionM ()
 resourceUpdate pool = do
-    title    <- param "title"
-    media    <- param "media"
-    url      <- param "url"
-    course   <- param "course"
-    summary  <- param "summary"
-    preview  <- param "preview"
-    keywords <- param "keywords"
-
-    let updatedResource = Resource title media url course summary preview keywords
+    updatedResource <- resourceFromParams
 
     resourceAction pool $ \id resource concepts -> do
             liftIO $ runSqlPool (editResource id updatedResource) pool
@@ -78,3 +62,14 @@ resourceAction pool action = do
                 Nothing                   -> notFound404 "resource"
                 Just (resource, concepts) -> action id resource concepts
 
+resourceFromParams :: ActionM Resource
+resourceFromParams = do
+    title    <- param "title"
+    media    <- param "media"
+    url      <- param "url"
+    course   <- param "course"
+    summary  <- param "summary"
+    preview  <- param "preview"
+    keywords <- param "keywords"
+
+    return $ Resource title media url course summary preview keywords
