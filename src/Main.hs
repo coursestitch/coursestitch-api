@@ -33,6 +33,7 @@ app pool = do
     get "/" $ Handlers.root
 
     get "/resource" $ Handlers.resources pool
+    post "/resource" $ Handlers.resourceCreate pool
     get "/resource/new" $ Handlers.resourceNew pool
     get "/resource/:resource" $ Handlers.resource pool
     put "/resource/:resource" $ Handlers.resourceUpdate pool

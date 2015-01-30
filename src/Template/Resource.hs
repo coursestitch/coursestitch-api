@@ -21,6 +21,11 @@ resources cs = unorderedList $ map resourceSimple cs
 resource :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
 resource resource concepts = article_ $ resourceDetailed resource concepts
 
+resourceCreated :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
+resourceCreated r cs = do
+    p_ $ mconcat [resourceUri r, " was created successfully"]
+    resource r cs
+
 resourceUpdated :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
 resourceUpdated r cs = do
     p_ $ mconcat [resourceUri r, " was updated successfully"]

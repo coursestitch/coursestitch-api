@@ -19,6 +19,21 @@ resourceNew :: ConnectionPool -> ActionM ()
 resourceNew pool = do
     template $ Template.resourceForm Nothing
 
+resourceCreate :: ConnectionPool -> ActionM ()
+resourceCreate pool = do
+    title    <- param "title"
+    media    <- param "media"
+    url      <- param "url"
+    course   <- param "course"
+    summary  <- param "summary"
+    preview  <- param "preview"
+    keywords <- param "keywords"
+
+    let createdResource = Resource title media url course summary preview keywords
+
+    resource <- liftIO $ runSqlPool (newResource createdResource) pool
+    template $ Template.resourceCreated resource []
+
 resource :: ConnectionPool -> ActionM ()
 resource pool = resourceAction pool $ \id resource concepts -> do
     template $ Template.resource resource concepts

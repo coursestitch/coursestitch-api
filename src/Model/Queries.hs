@@ -50,6 +50,12 @@ getResource id = do
     -- Group together the resources into a list
     return $ relationships rs
 
+-- Create a resource
+newResource :: Resource -> SqlPersistT IO (Entity Resource)
+newResource resource = do
+    key <- insert resource
+    return $ Entity key resource
+
 -- Update a resource
 editResource :: Int64 -> Resource -> SqlPersistT IO Resource
 editResource id resource = do
