@@ -23,7 +23,11 @@ import Template (template)
 
 -- Private imports.
 import Data.Monoid (mconcat)
-import Network.HTTP.Types.Status (status404, status400)
+import Network.HTTP.Types.Status (status409, status404, status400)
+
+conflict409 msg = do
+    status status409
+    text msg
 
 notFound404 entity = do
     status status404

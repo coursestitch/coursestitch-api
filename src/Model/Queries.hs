@@ -8,7 +8,7 @@ import Data.List (unzip3, nub)
 import Data.Maybe (catMaybes, listToMaybe)
 
 import qualified Database.Persist as P
-import Database.Persist (Entity, insert, get, entityVal, selectList, deleteWhere)
+import Database.Persist (Entity, insertUnique, get, entityVal, selectList, deleteWhere)
 import Database.Persist.Sql (SqlPersistT, toSqlKey)
 import Database.Esqueleto
 
@@ -51,10 +51,12 @@ getResource id = do
     return $ relationships rs
 
 -- Create a resource
-newResource :: Resource -> SqlPersistT IO (Entity Resource)
+newResource :: Resource -> SqlPersistT IO (Maybe (Entity Resource))
 newResource resource = do
-    key <- insert resource
-    return $ Entity key resource
+    key <- insertUnique resource
+    return $ case key of
+        Just key -> Just $ Entity key resource
+        Nothing  -> Nothing
 
 -- Update a resource
 editResource :: Int64 -> Resource -> SqlPersistT IO Resource

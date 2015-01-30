@@ -24,7 +24,9 @@ resourceCreate pool = do
     createdResource <- resourceFromParams
 
     resource <- liftIO $ runSqlPool (newResource createdResource) pool
-    template $ Template.resourceCreated resource []
+    case resource of
+        Nothing -> conflict409 "A resource with this URL already exists"
+        Just resource -> template $ Template.resourceCreated resource []
 
 resource :: ConnectionPool -> ActionM ()
 resource pool = resourceAction pool $ \id resource concepts -> do
