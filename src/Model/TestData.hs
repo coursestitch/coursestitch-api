@@ -2,7 +2,7 @@
 
 module Model.TestData where
 
-import Database.Persist (Entity, insert, get, entityVal)
+import Database.Persist (Entity, insertUnique, get, entityVal)
 import Database.Persist.Sql (ConnectionPool, runSqlPool, SqlPersistT)
 
 import Model
@@ -10,11 +10,11 @@ import Model
 testData :: SqlPersistT IO ()
 testData = do
     -- Create dummy data.
-    stringTopic <- insert $ Topic "String" "A list of characters"
-    integerTopic <- insert $ Topic "Integer" "A whole number"
-    functionTopic <- insert $ Topic "Function" "An operation that maps some input variables to some output variable"
-    howToString <- insert $ Concept (Just stringTopic) "How to string"
-    stringGuide <- insert $ Resource {
+    integerTopic <- insertUnique $ Topic "Integer" "A whole number"
+    functionTopic <- insertUnique $ Topic "Function" "An operation that maps some input variables to some output variable"
+    stringTopic <- insertUnique $ Topic "String" "A list of characters"
+    howToString <- insertUnique $ Concept stringTopic "How to string"
+    stringGuide <- insertUnique $ Resource {
         resourceTitle = "How does one string? All your questions answered.",
         resourceMedia = "text",
         resourceUrl   = "http://example.com/howtostring.html",
@@ -23,6 +23,9 @@ testData = do
         resourcePreview = "blah blah blah",
         resourceKeywords = "strings, stringing, str"
      }
-    insert $ Relationship stringGuide Taught howToString
-    insert $ User "sally" "sdlj7589fshou47" "blah"
+    case (stringGuide, howToString) of
+        (Just resource, Just concept) -> insertUnique $ Relationship resource Taught concept
+        otherwise -> return Nothing
+
+    insertUnique $ User "sally" "sdlj7589fshou47" "blah"
     return ()

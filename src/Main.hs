@@ -22,7 +22,7 @@ main :: IO ()
 main = do
     connStr <- lookupEnv "DATABASE_URL"
     let withPool = case connStr of
-            Nothing -> withSqlitePool ":memory:"
+            Nothing -> withSqlitePool "coursestitch-api.db"
             Just cs -> withPostgresqlPool (fromString cs)
     runNoLoggingT $ withPool 2 $ \pool -> liftIO $ do
         runSqlPool (runMigration migrateAll >> testData) pool
