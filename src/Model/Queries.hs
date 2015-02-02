@@ -8,7 +8,7 @@ import Data.List (unzip3, nub)
 import Data.Maybe (catMaybes, listToMaybe)
 
 import qualified Database.Persist as P
-import Database.Persist (Entity, insertUnique, get, entityVal, selectList, deleteWhere)
+import Database.Persist (Entity, insertUnique, get, entityVal, selectFirst, selectList, deleteWhere)
 import Database.Persist.Sql (SqlPersistT, toSqlKey)
 import Database.Esqueleto
 
@@ -85,6 +85,27 @@ getConcept title = do
     
     -- Group together the concepts into a list
     return $ relationships cs
+
+-- Create a concept
+newConcept :: Concept -> SqlPersistT IO (Maybe (Entity Concept))
+newConcept concept = do
+    key <- insertUnique concept
+    return $ case key of
+        Just key -> Just $ Entity key concept
+        Nothing  -> Nothing
+
+-- Update a concept
+editConcept :: String -> Concept -> SqlPersistT IO Concept
+editConcept name concept = do
+    oldConcept <- selectFirst [ConceptTitle P.==. fromString name] []
+    case fmap entityKey oldConcept of
+        Nothing  -> return ()
+        Just key -> replace key concept
+    return concept
+
+-- Delete a concept
+deleteConcept :: String -> SqlPersistT IO ()
+deleteConcept name = deleteWhere [ConceptTitle P.==. fromString name]
 
 
 -- Select all Topics in the database

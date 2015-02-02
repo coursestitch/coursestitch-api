@@ -41,7 +41,12 @@ app pool = do
     get "/resource/:resource/edit" $ Handlers.resourceEdit pool
 
     get "/concept" $ Handlers.concepts pool
+    post "/concept" $ Handlers.conceptCreate pool
+    get "/concept/new" $ Handlers.conceptNew pool
     get "/concept/:concept" $ Handlers.concept pool
+    put "/concept/:concept" $ Handlers.conceptUpdate pool
+    delete "/concept/:concept" $ Handlers.conceptDelete pool
+    get "/concept/:concept/edit" $ Handlers.conceptEdit pool
 
     get "/topic" $ Handlers.topics pool
     get "/topic/:topic" $ Handlers.topic pool
