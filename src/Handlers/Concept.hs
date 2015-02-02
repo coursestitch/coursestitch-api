@@ -29,29 +29,29 @@ conceptCreate pool = do
         Just concept -> template $ Template.conceptCreated concept []
 
 concept :: ConnectionPool -> ActionM ()
-concept pool = conceptAction pool $ \name concept concepts -> do
-    template $ Template.concept concept concepts
+concept pool = conceptAction pool $ \name concept resources -> do
+    template $ Template.concept concept resources
 
 conceptEdit :: ConnectionPool -> ActionM ()
-conceptEdit pool = conceptAction pool $ \name concept concepts -> do
+conceptEdit pool = conceptAction pool $ \name concept resources -> do
     template $ Template.conceptForm $ Just concept
 
 conceptUpdate :: ConnectionPool -> ActionM ()
 conceptUpdate pool = do
     updatedConcept <- conceptFromParams
 
-    conceptAction pool $ \name concept concepts -> do
+    conceptAction pool $ \name concept resourcess -> do
             liftIO $ runSqlPool (editConcept name updatedConcept) pool
             concept' <- liftIO $ runSqlPool (getConcept name) pool
             case concept' of
                 Nothing                   -> notFound404 "concept"
-                Just (concept, resources) -> template $ Template.conceptUpdated concept concepts
+                Just (concept, resources) -> template $ Template.conceptUpdated concept resources
 
 conceptDelete :: ConnectionPool -> ActionM ()
 conceptDelete pool = do
-    conceptAction pool $ \name concept concepts -> do
+    conceptAction pool $ \name concept resources -> do
         liftIO $ runSqlPool (deleteConcept name) pool
-        template $ Template.conceptDeleted concept concepts
+        template $ Template.conceptDeleted concept resources
 
 conceptAction :: ConnectionPool -> (String -> Entity Concept -> [(RelationshipType, [Entity Resource])] -> ActionM ()) -> ActionM ()
 conceptAction pool action = do
