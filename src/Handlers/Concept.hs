@@ -4,7 +4,7 @@ module Handlers.Concept where
 
 import Text.Read (readMaybe)
 
-import Database.Persist (Entity)
+import Database.Persist (Entity, selectFirst, entityVal)
 import Database.Persist.Sql (toSqlKey)
 
 import Handlers.Handlers
@@ -26,40 +26,44 @@ conceptCreate pool = do
     concept <- liftIO $ runSqlPool (newConcept createdConcept) pool
     case concept of
         Nothing      -> conflict409 "A concept with this URL already exists"
-        Just concept -> template $ Template.conceptCreated concept []
+        Just concept -> template $ Template.conceptCreated concept Nothing []
 
 concept :: ConnectionPool -> ActionM ()
-concept pool = conceptAction pool $ \name concept resources -> do
-    template $ Template.concept concept resources
+concept pool = conceptAction pool $ \name concept topic resources -> do
+    template $ Template.concept concept topic resources
 
 conceptEdit :: ConnectionPool -> ActionM ()
-conceptEdit pool = conceptAction pool $ \name concept resources -> do
+conceptEdit pool = conceptAction pool $ \name concept topic resources -> do
     template $ Template.conceptForm $ Just concept
 
 conceptUpdate :: ConnectionPool -> ActionM ()
 conceptUpdate pool = do
     updatedConcept <- conceptFromParams
 
-    conceptAction pool $ \name concept resourcess -> do
+    conceptAction pool $ \name concept topic resourcess -> do
             liftIO $ runSqlPool (editConcept name updatedConcept) pool
             concept' <- liftIO $ runSqlPool (getConcept name) pool
             case concept' of
                 Nothing                   -> notFound404 "concept"
-                Just (concept, resources) -> template $ Template.conceptUpdated concept resources
+                Just (concept, resources) -> template $ Template.conceptUpdated concept topic resources
 
 conceptDelete :: ConnectionPool -> ActionM ()
 conceptDelete pool = do
-    conceptAction pool $ \name concept resources -> do
+    conceptAction pool $ \name concept topic resources -> do
         liftIO $ runSqlPool (deleteConcept name) pool
-        template $ Template.conceptDeleted concept resources
+        template $ Template.conceptDeleted concept topic resources
 
-conceptAction :: ConnectionPool -> (String -> Entity Concept -> [(RelationshipType, [Entity Resource])] -> ActionM ()) -> ActionM ()
+conceptAction :: ConnectionPool
+                 -> (String -> Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> ActionM ())
+                 -> ActionM ()
 conceptAction pool action = do
     name <- param "concept"
     concept <- liftIO $ runSqlPool (getConcept name) pool
     case concept of
         Nothing                   -> notFound404 "concept"
-        Just (concept, resources) -> action name concept resources
+        Just (concept, resources) -> do
+            topic <- liftIO $ runSqlPool (getConceptTopic concept) pool
+            action name concept topic resources
 
 conceptFromParams :: ActionM Concept
 conceptFromParams = do

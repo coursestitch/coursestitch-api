@@ -124,6 +124,14 @@ getTopic title = do
     -- Group together the concepts into a list
     return $ group tcs
 
+-- Get the topic entity from the database
+getConceptTopic :: Entity Concept -> SqlPersistT IO (Maybe (Entity Topic))
+getConceptTopic concept = do
+    topic <- case (conceptTopic . entityVal) concept of
+        Nothing      -> return Nothing
+        Just topicId -> selectFirst [TopicId P.==. topicId] []
+    return topic
+
 
 -- Select all Users in the database
 getUsers :: SqlPersistT IO [Entity User]

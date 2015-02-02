@@ -14,28 +14,29 @@ import Database.Persist (Entity, entityVal)
 import Database.Persist.Sql (unSqlBackendKey)
 
 import Template.Template
-import  {-# SOURCE #-} Template.Resource (resourceSimple)
+import {-# SOURCE #-} Template.Topic (topicSimple)
+import {-# SOURCE #-} Template.Resource (resourceSimple)
 
 concepts :: [Entity Concept] -> Html ()
 concepts cs = unorderedList $ map conceptSimple cs
 
-concept :: Entity Concept  -> [(RelationshipType, [Entity Resource])] -> Html ()
-concept concept resources = article_ $ conceptDetailed concept resources
+concept :: Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> Html ()
+concept concept topic resources = article_ $ conceptDetailed concept topic resources
 
-conceptCreated :: Entity Concept -> [(RelationshipType, [Entity Resource])] -> Html ()
-conceptCreated r cs = do
+conceptCreated :: Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> Html ()
+conceptCreated r t cs = do
     p_ $ toHtml $ mconcat [conceptUri r, " was created successfully"]
-    concept r cs
+    concept r t cs
 
-conceptUpdated :: Entity Concept -> [(RelationshipType, [Entity Resource])] -> Html ()
-conceptUpdated r cs = do
+conceptUpdated :: Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> Html ()
+conceptUpdated r t cs = do
     p_ $ toHtml $ mconcat [conceptUri r, " was updated successfully"]
-    concept r cs
+    concept r t cs
 
-conceptDeleted :: Entity Concept -> [(RelationshipType, [Entity Resource])] -> Html ()
-conceptDeleted r cs = do
+conceptDeleted :: Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> Html ()
+conceptDeleted r t cs = do
     p_ $ toHtml $ mconcat [conceptUri r, " was deleted"]
-    concept r cs
+    concept r t cs
 
 conceptSimple :: Entity Concept -> Html ()
 conceptSimple concept = do
@@ -63,10 +64,17 @@ conceptForm concept = do
                 Just _  -> decodeUtf8 methodPut
                 Nothing -> decodeUtf8 methodPost
 
-conceptDetailed :: Entity Concept -> [(RelationshipType, [Entity Resource])] -> Html ()
-conceptDetailed concept rels = do
+conceptDetailed :: Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> Html ()
+conceptDetailed concept topic rels = do
     conceptLink concept $ conceptHeading concept
+    conceptTopicArticle topic
     mconcat $ map (uncurry conceptResources) rels
+
+conceptTopicArticle :: Maybe (Entity Topic) -> Html ()
+conceptTopicArticle topic = article_ $ do
+    case topic of
+        Nothing    -> conceptTopicMissing
+        Just topic -> topicSimple topic
 
 conceptResources :: RelationshipType -> [Entity Resource] -> Html ()
 conceptResources rel resources = do
@@ -80,6 +88,8 @@ conceptUri concept = mappend "/concept/" ((conceptTitle . entityVal) concept)
 conceptLink concept html = link (conceptUri concept) html
 
 conceptHeading = h1_ . toHtml . conceptTitle . entityVal
+
+conceptTopicMissing = p_ "This concept has no topic"
 
 conceptResourcesHeading rel = h2_ ((fromString . show) rel `mappend` " by")
 conceptResourcesMissing rel = p_ ("There are no resources that " `mappend` (fromString . show) rel `mappend` " this concept")
