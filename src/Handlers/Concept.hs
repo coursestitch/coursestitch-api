@@ -5,6 +5,7 @@ module Handlers.Concept where
 import Text.Read (readMaybe)
 
 import Database.Persist (Entity)
+import Database.Persist.Sql (toSqlKey)
 
 import Handlers.Handlers
 import qualified Template
@@ -63,5 +64,6 @@ conceptAction pool action = do
 conceptFromParams :: ActionM Concept
 conceptFromParams = do
     title    <- param "title"
+    topic    <- param "topic"
 
-    return $ Concept Nothing title 
+    return $ Concept (fmap toSqlKey $ readMaybe topic) title

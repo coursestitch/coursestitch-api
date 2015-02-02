@@ -11,6 +11,7 @@ import Network.HTTP.Types.Method (methodGet, methodPost, methodPut, methodDelete
 import Lucid
 import Model
 import Database.Persist (Entity, entityVal)
+import Database.Persist.Sql (unSqlBackendKey)
 
 import Template.Template
 import  {-# SOURCE #-} Template.Resource (resourceSimple)
@@ -45,11 +46,16 @@ conceptForm concept = do
     form_ [action_ uri, method_ method] $ do
         fieldset_ $ do
             input "Title" "title" $ get conceptTitle
+            input "Topic" "topic" $ getConceptTopicId
         input_ [type_ "submit"]
 
     script_ [src_ "/js/form-methods.js"] ("" :: String)
 
     where get f = fmap (f . entityVal) concept
+          getConceptTopicId = fmap (fromString . show . unSqlBackendKey . unTopicKey) getConceptTopic
+          getConceptTopic = do
+            c <- concept
+            (conceptTopic . entityVal) c
           uri = case concept of
                 Just concept -> conceptUri concept
                 Nothing       -> "/concept"
