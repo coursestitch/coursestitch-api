@@ -16,7 +16,7 @@ import Network.Wai.Middleware.Static (staticPolicy, noDots, (>->), addBase)
 import Web.Scotty (ActionM, ScottyM, scotty, get, put, post, delete, middleware)
 
 import qualified Handlers
-import Model (migrateAll, Resource, Concept)
+import Model (migrateAll, Resource(Resource), Concept(Concept))
 import Model.Queries (getEntities)
 import Model.TestData (testData)
 
@@ -34,8 +34,8 @@ app :: ConnectionPool -> ScottyM ()
 app pool = do
     get "/" $ Handlers.root
     
-    get "/resource" $ void (Handlers.entities pool :: ActionM [Entity Resource])
-    get "/concept" $ void (Handlers.entities pool :: ActionM [Entity Concept])
+    get "/resource" $ Handlers.entities (Resource "a" "b" "c" "d" "e" "f" "g") pool
+    get "/concept" $ Handlers.entities (Concept Nothing "b") pool
 
     --get "/resource" $ Handlers.resources pool
     post "/resource" $ Handlers.resourceCreate pool

@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Handlers.Handlers (
     -- Export common symbols used in most handlers.
@@ -17,7 +19,7 @@ module Handlers.Handlers (
 -- These imports are re-exported.
 import Control.Monad.IO.Class (liftIO)
 import Web.Scotty (ActionM, text, param, status)
-import Database.Persist.Sql (ConnectionPool, runSqlPool, SqlPersistT, PersistEntityBackend, )
+import Database.Persist.Sql (ConnectionPool, runSqlPool, SqlPersistT, PersistEntityBackend, SqlBackend)
 import Model
 import Model.Queries
 import qualified Template
@@ -42,7 +44,7 @@ badRequest400 msg = do
     text msg
 
 -- Entity Handlers
-entities pool = do
-    entityList <- liftIO $ runSqlPool getEntities pool
+entities :: forall val . (PersistEntity val, Template.HtmlShow (Entity val), PersistEntityBackend val ~ SqlBackend) => val -> ConnectionPool -> ActionM ()
+entities entity pool = do
+    entityList <- liftIO $ runSqlPool (getEntities :: SqlPersistT IO [Entity val]) pool
     template $ Template.entities entityList
-    return entityList
