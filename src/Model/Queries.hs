@@ -1,3 +1,5 @@
+{-# LANGUAGE NoMonomorphismRestriction #-}
+
 module Model.Queries where
 
 import Data.Int (Int64)
@@ -32,6 +34,8 @@ relationships zs = zs'
     where (xs, rels, ys) = unzip3 zs
           rels' = map joinMaybe $ zip (map (fmap (relationshipRelationship . entityVal)) rels) ys
           zs'   = fmap (\(x, rels) -> (x, groups rels)) $ group (zip xs rels')
+
+getEntities = selectList [] []
 
 -- Select all Resources in the database
 getResources :: SqlPersistT IO [Entity Resource]

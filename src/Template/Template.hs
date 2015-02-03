@@ -2,12 +2,14 @@
 
 module Template.Template where
 
+import Data.String (fromString)
 import Data.Text (Text)
 import Data.Maybe (fromMaybe)
 import Data.Monoid (mconcat)
 
 import Lucid
 
+-- Components
 unorderedList :: [Html ()] -> Html ()
 unorderedList = ul_ . mconcat . (map li_)
 
