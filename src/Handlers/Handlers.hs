@@ -44,7 +44,7 @@ badRequest400 msg = do
     text msg
 
 -- Entity Handlers
-entities :: forall val . (PersistEntity val, Template.HtmlShow (Entity val), PersistEntityBackend val ~ SqlBackend) => val -> ConnectionPool -> ActionM ()
+entities :: forall val . (PersistEntity val, Template.HtmlShow (Entity val), PersistEntityBackend val ~ SqlBackend) => Maybe val -> ConnectionPool -> ActionM ()
 entities entity pool = do
     entityList <- liftIO $ runSqlPool (getEntities :: SqlPersistT IO [Entity val]) pool
     template $ Template.entities entityList

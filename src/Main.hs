@@ -34,8 +34,8 @@ app :: ConnectionPool -> ScottyM ()
 app pool = do
     get "/" $ Handlers.root
     
-    get "/resource" $ Handlers.entities (Resource "a" "b" "c" "d" "e" "f" "g") pool
-    get "/concept" $ Handlers.entities (Concept Nothing "b") pool
+    get "/resource" $ Handlers.entities (Nothing :: Maybe Resource) pool
+    get "/concept" $ Handlers.entities (Nothing :: Maybe Concept) pool
 
     --get "/resource" $ Handlers.resources pool
     post "/resource" $ Handlers.resourceCreate pool
