@@ -16,7 +16,7 @@ import Network.Wai.Middleware.Static (staticPolicy, noDots, (>->), addBase)
 import Web.Scotty (ActionM, ScottyM, scotty, get, put, post, delete, middleware)
 
 import qualified Handlers
-import Model (migrateAll, Resource, Concept)
+import Model (migrateAll, Resource, Concept, Topic, User)
 import Model.Queries (getEntities)
 import Model.TestData (testData)
 
@@ -51,10 +51,10 @@ app pool = do
     delete "/concept/:concept" $ Handlers.conceptDelete pool
     get "/concept/:concept/edit" $ Handlers.conceptEdit pool
 
-    get "/topic" $ Handlers.topics pool
+    get' "/topic"    (Handlers.entities pool :: ActionM [Entity Topic])
     get "/topic/:topic" $ Handlers.topic pool
 
-    get "/user" $ Handlers.users pool
+    get' "/user"     (Handlers.entities pool :: ActionM [Entity User])
     get "/user/:user" $ Handlers.user pool
     post "/login" $ Handlers.login pool
     delete "/login" $ Handlers.logout pool

@@ -41,4 +41,10 @@ instance HtmlShow (Entity Resource) where
 instance HtmlShow (Entity Concept) where
     simpleHtml concept = conceptLink concept $ conceptHeading concept
 
+instance HtmlShow (Entity Topic) where
+    simpleHtml = topicSimple
+
+instance HtmlShow (Entity User) where
+    simpleHtml = userSimple
+
 entities = article_ . (mconcat . map simpleHtml)
