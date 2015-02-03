@@ -34,10 +34,8 @@ app :: ConnectionPool -> ScottyM ()
 app pool = do
     get "/" $ Handlers.root
     
-    get "/resource" $ void (Handlers.entities pool :: ActionM [Entity Resource])
-    get "/concept" $ void (Handlers.entities pool :: ActionM [Entity Concept])
 
-    --get "/resource" $ Handlers.resources pool
+    get' "/resource" (Handlers.entities pool :: ActionM [Entity Resource])
     post "/resource" $ Handlers.resourceCreate pool
     get "/resource/new" $ Handlers.resourceNew pool
     get "/resource/:resource" $ Handlers.resource pool
@@ -45,7 +43,7 @@ app pool = do
     delete "/resource/:resource" $ Handlers.resourceDelete pool
     get "/resource/:resource/edit" $ Handlers.resourceEdit pool
 
-    --get "/concept" $ Handlers.concepts pool
+    get' "/concept"  (Handlers.entities pool :: ActionM [Entity Concept])
     post "/concept" $ Handlers.conceptCreate pool
     get "/concept/new" $ Handlers.conceptNew pool
     get "/concept/:concept" $ Handlers.concept pool
@@ -62,3 +60,5 @@ app pool = do
     delete "/login" $ Handlers.logout pool
 
     middleware $ staticPolicy (noDots >-> addBase "./static")
+
+    where get' string action = get string $ void action
