@@ -48,3 +48,16 @@ a {
 a:hover {
     text-decoration: underline;
 }
+
+/* Lists */
+ul {
+    margin: 10px;
+}
+
+li {
+    margin-left: 15px;
+}
+
+li h1 {
+    font-size: 18px;
+}
