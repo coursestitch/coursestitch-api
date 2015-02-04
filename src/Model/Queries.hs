@@ -1,4 +1,7 @@
 {-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Model.Queries where
 
@@ -36,6 +39,11 @@ relationships zs = zs'
           zs'   = fmap (\(x, rels) -> (x, groups rels)) $ group (zip xs rels')
 
 getEntities = selectList [] []
+
+getEntity id = do
+    entity <- get key
+    return $ fmap (Entity key) entity
+    where key = toSqlKey id
 
 -- Select all Resources in the database
 getResources :: SqlPersistT IO [Entity Resource]

@@ -38,7 +38,7 @@ app pool = do
     get' "/resource" (Handlers.entities pool :: ActionM [Entity Resource])
     post "/resource" $ Handlers.resourceCreate pool
     get "/resource/new" $ Handlers.resourceNew pool
-    get "/resource/:resource" $ Handlers.resource pool
+    get' "/resource/:id" (Handlers.entity pool :: ActionM (Maybe (Entity Resource)))
     put "/resource/:resource" $ Handlers.resourceUpdate pool
     delete "/resource/:resource" $ Handlers.resourceDelete pool
     get "/resource/:resource/edit" $ Handlers.resourceEdit pool

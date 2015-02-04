@@ -14,6 +14,8 @@ module Handlers.Handlers (
     module Handlers.Handlers
 ) where
 
+import Text.Read (readMaybe)
+
 -- These imports are re-exported.
 import Control.Monad.IO.Class (liftIO)
 import Web.Scotty (ActionM, text, param, status)
@@ -46,3 +48,17 @@ entities pool = do
     entityList <- liftIO $ runSqlPool getEntities pool
     template $ Template.entities entityList
     return entityList
+
+entity pool = do
+    id <- param "id"
+    
+    case readMaybe id of
+        Nothing -> do
+            badRequest400 "id should be an integer"
+            return Nothing
+        Just id -> do
+            entity <- liftIO $ runSqlPool (getEntity id) pool
+            case entity of
+                Nothing     -> notFound404 "entity"
+                Just entity -> template $ Template.entity entity
+            return entity

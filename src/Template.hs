@@ -9,6 +9,7 @@ module Template (
     module Template.User,
     HtmlShow,
     entities,
+    entity,
     template
 ) where
 
@@ -48,3 +49,4 @@ instance HtmlShow (Entity User) where
     simpleHtml = userSimple
 
 entities = article_ . (mconcat . map simpleHtml)
+entity = article_ . simpleHtml
