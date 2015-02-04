@@ -14,6 +14,8 @@ page body = do
     html_ $ do
         head_ $ do
             title_ "course stitch"
+            script_ [src_ "//use.typekit.net/wlh0kqu.js"] ("" :: String)
+            script_ [] ("try{Typekit.load();}catch(e){}" :: String)
             css_ "/css/reset.css"
             css_ "/css/main.css"
         body_ body
