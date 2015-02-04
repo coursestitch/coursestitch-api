@@ -46,16 +46,16 @@ app pool = do
     get' "/concept"  (Handlers.entities pool :: ActionM [Entity Concept])
     post "/concept" $ Handlers.conceptCreate pool
     get "/concept/new" $ Handlers.conceptNew pool
-    get "/concept/:concept" $ Handlers.concept pool
+    get' "/concept/:id" (Handlers.entity pool :: ActionM (Maybe (Entity Concept)))
     put "/concept/:concept" $ Handlers.conceptUpdate pool
     delete "/concept/:concept" $ Handlers.conceptDelete pool
     get "/concept/:concept/edit" $ Handlers.conceptEdit pool
 
     get' "/topic"    (Handlers.entities pool :: ActionM [Entity Topic])
-    get "/topic/:topic" $ Handlers.topic pool
+    get' "/topic/:id" (Handlers.entity pool :: ActionM (Maybe (Entity Topic)))
 
     get' "/user"     (Handlers.entities pool :: ActionM [Entity User])
-    get "/user/:user" $ Handlers.user pool
+    get' "/user/:id" (Handlers.entity pool :: ActionM (Maybe (Entity User)))
     post "/login" $ Handlers.login pool
     delete "/login" $ Handlers.logout pool
 
