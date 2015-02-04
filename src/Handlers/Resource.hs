@@ -32,6 +32,10 @@ resource :: ConnectionPool -> ActionM ()
 resource pool = resourceAction pool $ \id resource concepts -> do
     template $ Template.resource resource concepts
 
+resourcePage :: ConnectionPool -> ActionM ()
+resourcePage pool = resourceAction pool $ \id resource concepts -> do
+    template $ Template.resourcePage resource concepts
+
 resourceEdit :: ConnectionPool -> ActionM ()
 resourceEdit pool = resourceAction pool $ \id resource concepts -> do
     template $ Template.resourceForm $ Just resource
