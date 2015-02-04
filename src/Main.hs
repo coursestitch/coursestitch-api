@@ -43,7 +43,7 @@ app pool = do
     get "/concept" $ Handlers.concepts pool
     post "/concept" $ Handlers.conceptCreate pool
     get "/concept/new" $ Handlers.conceptNew pool
-    get "/concept/:concept" $ Handlers.concept pool
+    get "/concept/:concept" $ Handlers.conceptPage pool
     put "/concept/:concept" $ Handlers.conceptUpdate pool
     delete "/concept/:concept" $ Handlers.conceptDelete pool
     get "/concept/:concept/edit" $ Handlers.conceptEdit pool

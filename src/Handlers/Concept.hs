@@ -32,6 +32,10 @@ concept :: ConnectionPool -> ActionM ()
 concept pool = conceptAction pool $ \name concept topic resources -> do
     template $ Template.concept concept topic resources
 
+conceptPage :: ConnectionPool -> ActionM ()
+conceptPage pool = conceptAction pool $ \name concept topic resources -> do
+    template $ Template.conceptPage concept topic resources
+
 conceptEdit :: ConnectionPool -> ActionM ()
 conceptEdit pool = conceptAction pool $ \name concept topic resources -> do
     template $ Template.conceptForm $ Just concept

@@ -8,6 +8,7 @@ import Model
 import Database.Persist (Entity)
 
 import Template.Resource
+import Template.Concept
 
 page :: Html () -> Html ()
 page body = do
@@ -24,3 +25,6 @@ page body = do
 
 resourcePage :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html()
 resourcePage r rels = page $ resource r rels
+
+conceptPage :: Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> Html()
+conceptPage c t rs = page $ concept c t rs
