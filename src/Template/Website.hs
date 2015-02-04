@@ -14,8 +14,8 @@ page body = do
     html_ $ do
         head_ $ do
             title_ "course stitch"
-            css_ "/css/main.css"
             css_ "/css/reset.css"
+            css_ "/css/main.css"
         body_ body
     
     where css_ url = link_ [type_ "text/css", rel_ "stylesheet", href_ url]
