@@ -61,4 +61,10 @@ Session
     user  UserId
     token Token
     deriving Show
+
+Mastery
+    user     UserId
+    resource ResourceId
+    UniqueMasteryUserResource
+    deriving Show
 |]
