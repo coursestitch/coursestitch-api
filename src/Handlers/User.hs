@@ -10,7 +10,6 @@ import Crypto.BCrypt (validatePassword)
 import Web.Scotty.Cookie (getCookie, setSimpleCookie)
 import Network.HTTP.Types.Status (forbidden403)
 import Data.Maybe (isJust)
-import Web.Scotty (addHeader)
 
 users :: ConnectionPool -> ActionM ()
 users pool = do
