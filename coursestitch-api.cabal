@@ -20,11 +20,15 @@ executable coursestitch-api
                        esqueleto,
                        lucid >=2.6.1 && <2.7,
                        scotty,
+                       cookie, blaze-builder, time, containers,
+                       bcrypt,
+                       entropy,
                        wai-middleware-static,
                        http-types,
                        transformers, monad-logger,
                        template-haskell,
                        text,
+                       bytestring, base64-bytestring,
                        base >=4.6 && <4.7
   hs-source-dirs:      src
   default-language:    Haskell2010
