@@ -9,6 +9,7 @@ import Database.Persist (Entity)
 
 import Handlers.Handlers
 import qualified Template
+import Handlers.User (isLoggedIn)
 
 resources :: ConnectionPool -> ActionM ()
 resources pool = do
@@ -30,7 +31,10 @@ resourceCreate pool = do
 
 resource :: ConnectionPool -> ActionM ()
 resource pool = resourceAction pool $ \id resource concepts -> do
-    template $ Template.resource resource concepts
+    loggedIn <- isLoggedIn pool
+    template $ do
+        Template.resource resource concepts
+        Template.resourceConcepts loggedIn resource concepts
 
 resourceEdit :: ConnectionPool -> ActionM ()
 resourceEdit pool = resourceAction pool $ \id resource concepts -> do
