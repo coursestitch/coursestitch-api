@@ -65,6 +65,7 @@ app pool = do
     post "/session" $ Handlers.login pool
     delete "/session" $ Handlers.logout pool
 
+    get "/mastery" $ Handlers.masteries pool -- For debugging only! Remove me!
     post "/mastery/:resource" $ Handlers.masteryCreate pool
     delete "/mastery/:resource" $ Handlers.masteryDelete pool
 

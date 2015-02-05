@@ -65,6 +65,6 @@ Session
 Mastery
     user     UserId
     resource ResourceId
-    UniqueMasteryUserResource
+    UniqueMasteryUserResource user resource
     deriving Show
 |]

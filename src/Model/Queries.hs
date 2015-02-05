@@ -217,3 +217,6 @@ newMastery user resource = do
 deleteMastery :: Entity User -> Entity Resource -> SqlPersistT IO ()
 deleteMastery user resource = deleteWhere
     [MasteryUser P.==. entityKey user, MasteryResource P.==. entityKey resource]
+
+getMasteries :: SqlPersistT IO [Entity Mastery]
+getMasteries = selectList [] []

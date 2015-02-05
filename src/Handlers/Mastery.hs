@@ -12,6 +12,13 @@ import Crypto.BCrypt (validatePassword)
 import Web.Scotty.Cookie (getCookie, setSimpleCookie)
 import Network.HTTP.Types.Status (forbidden403)
 import Data.Maybe (isJust)
+import Data.Text.Lazy (pack)
+import Data.Monoid (mconcat)
+
+masteries :: ConnectionPool -> ActionM ()
+masteries pool = do
+    masteries <- liftIO $ runSqlPool getMasteries pool
+    text $ mconcat $ map (pack . show . entityVal) masteries
 
 masteryCreate :: ConnectionPool -> ActionM ()
 masteryCreate pool = authenticate pool $ \user ->
