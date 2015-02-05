@@ -41,7 +41,7 @@ Concept
 Topic
     title   Text
     summary Text
-    deriving Show
+    deriving Show Eq
 
 Relationship
     resource     ResourceId

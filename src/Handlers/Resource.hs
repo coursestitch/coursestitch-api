@@ -4,8 +4,10 @@ module Handlers.Resource where
 
 import Text.Read (readMaybe)
 import Data.Int (Int64)
+import Data.Text (strip, split, unpack)
+import Data.String (fromString)
 
-import Database.Persist (Entity)
+import Database.Persist (Entity, entityVal)
 
 import Handlers.Handlers
 import qualified Template
@@ -38,11 +40,8 @@ resourcePage pool = resourceAction pool $ \id resource concepts -> do
 
 resourceEdit :: ConnectionPool -> ActionM ()
 resourceEdit pool = resourceAction pool $ \id resource concepts -> do
-    let keywords = ["String"]
-    topic <- liftIO $ runSqlPool (getTopic $ head keywords) pool
-    let topics = (case topic of
-            Nothing    -> []
-            Just topic -> [topic])
+    let keywords = map unpack . map strip . split (==',') $ (resourceKeywords . entityVal) resource
+    topics <- liftIO $ runSqlPool (getTopicsFromKeywords $ keywords) pool
     
     template $ Template.page $ do
         Template.resourceForm $ Just resource

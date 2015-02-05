@@ -149,6 +149,18 @@ deleteConcept name = deleteWhere [ConceptTitle P.==. fromString name]
 getTopics :: SqlPersistT IO [Entity Topic]
 getTopics = selectList [] []
 
+-- Select all Topics in the database
+getTopicsFromKeywords :: [String] -> SqlPersistT IO [(Entity Topic, [Entity Concept])]
+getTopicsFromKeywords kws = do
+    topics <- select $
+        from $ \(topic `InnerJoin` concept) -> do
+        on (just (topic ^. TopicId) ==. concept ^. ConceptTopic)
+        where_ (foldl1 (||.) [topic ^. TopicTitle ==. (val . fromString) kw | kw <- kws])
+        return (topic, concept)
+
+    -- Group together the topics into a list
+    return $ groups topics
+
 getTopic :: String -> SqlPersistT IO (Maybe (Entity Topic, [Entity Concept]))
 getTopic title = do
     -- Select topic with given title from the DB, and the concepts associated with them.
