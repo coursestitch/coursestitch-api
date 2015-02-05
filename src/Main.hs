@@ -65,4 +65,7 @@ app pool = do
     post "/session" $ Handlers.login pool
     delete "/session" $ Handlers.logout pool
 
+    post "/mastery/:resource" $ Handlers.masteryCreate pool
+    delete "/mastery/:resource" $ Handlers.masteryDelete pool
+
     middleware $ staticPolicy (noDots >-> addBase "./static")
