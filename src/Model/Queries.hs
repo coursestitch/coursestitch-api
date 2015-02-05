@@ -206,17 +206,32 @@ newSession u = do
 deleteSessions :: Token -> SqlPersistT IO ()
 deleteSessions token = deleteWhere [SessionToken P.==. token]
 
-newMastery :: Entity User -> Entity Resource -> SqlPersistT IO (Maybe (Entity Mastery))
-newMastery user resource = do
+getMasteries :: SqlPersistT IO ([Entity ResourceMastery], [Entity ConceptMastery])
+getMasteries = do
+    rm <- selectList [] []
+    cm <- selectList [] []
+    return (rm, cm)
+
+newResourceMastery :: Entity User -> Entity Resource -> SqlPersistT IO (Maybe (Entity ResourceMastery))
+newResourceMastery user resource = do
     maybeMasteryKey <- insertUnique mastery
     case maybeMasteryKey of
         Nothing  -> return Nothing
         Just key -> return $ Just (Entity key mastery)
-    where mastery = Mastery (entityKey user) (entityKey resource)
+    where mastery = ResourceMastery (entityKey user) (entityKey resource)
 
-deleteMastery :: Entity User -> Entity Resource -> SqlPersistT IO ()
-deleteMastery user resource = deleteWhere
-    [MasteryUser P.==. entityKey user, MasteryResource P.==. entityKey resource]
+deleteResourceMastery :: Entity User -> Entity Resource -> SqlPersistT IO ()
+deleteResourceMastery user resource = deleteWhere
+    [ResourceMasteryUser P.==. entityKey user, ResourceMasteryResource P.==. entityKey resource]
 
-getMasteries :: SqlPersistT IO [Entity Mastery]
-getMasteries = selectList [] []
+newConceptMastery :: Entity User -> Entity Concept -> SqlPersistT IO (Maybe (Entity ConceptMastery))
+newConceptMastery user concept = do
+    maybeMasteryKey <- insertUnique mastery
+    case maybeMasteryKey of
+        Nothing  -> return Nothing
+        Just key -> return $ Just (Entity key mastery)
+    where mastery = ConceptMastery (entityKey user) (entityKey concept)
+
+deleteConceptMastery :: Entity User -> Entity Concept -> SqlPersistT IO ()
+deleteConceptMastery user concept = deleteWhere
+    [ConceptMasteryUser P.==. entityKey user, ConceptMasteryConcept P.==. entityKey concept]

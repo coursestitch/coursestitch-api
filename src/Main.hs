@@ -66,7 +66,9 @@ app pool = do
     delete "/session" $ Handlers.logout pool
 
     get "/mastery" $ Handlers.masteries pool -- For debugging only! Remove me!
-    post "/mastery/:resource" $ Handlers.masteryCreate pool
-    delete "/mastery/:resource" $ Handlers.masteryDelete pool
+    post "/mastery/resource/:resource" $ Handlers.resourceMasteryCreate pool
+    delete "/mastery/resource/:resource" $ Handlers.resourceMasteryDelete pool
+    post "/mastery/concept/:concept" $ Handlers.conceptMasteryCreate pool
+    delete "/mastery/concept/:concept" $ Handlers.conceptMasteryDelete pool
 
     middleware $ staticPolicy (noDots >-> addBase "./static")
