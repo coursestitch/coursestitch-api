@@ -75,9 +75,13 @@ topicRelationships resource topic concepts = do
 
 relationship :: Entity Resource -> Entity Concept -> Html ()
 relationship resource concept = do
-    input_ [id_ "relationship", type_ "checkbox", name_ "relationship"]
-    label_ [for_ "relationship"] $ (toHtml . conceptTitle . entityVal) concept
-
+    (toHtml . conceptTitle . entityVal) concept
+    br_ []
+    mconcat $ map checkbox [Taught ..]
+    
+    where checkbox rel = do
+            input_ [id_ "relationship", type_ "checkbox", name_ "relationship"]
+            label_ [for_ "relationship"] $ (toHtml . show) rel
 
 resourceDetailed :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
 resourceDetailed resource rels = do
