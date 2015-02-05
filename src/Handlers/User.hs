@@ -59,6 +59,10 @@ login pool = do
 
 logout :: ConnectionPool -> ActionM ()
 logout pool = do
-    token <- fmap Token $ param "token"
-    sessionEntity <- liftIO $ runSqlPool (deleteSessions token) pool
-    text ""
+    maybeToken <- getCookie "session"
+    case maybeToken of
+        Nothing -> return ()
+        Just t  -> do
+            liftIO $ runSqlPool (deleteSessions (Token t)) pool
+            setSimpleCookie "session" ""
+            text "logged out"
