@@ -15,5 +15,16 @@ import Handlers.Topic
 import Handlers.User
 import Handlers.Handlers
 
-root :: ActionM ()
-root = text "Course stitch"
+import Data.Monoid ((<>))
+import Model (userName)
+import Database.Persist (entityVal)
+import Data.Text.Lazy (fromStrict)
+import Web.Scotty (html)
+import qualified Template
+
+root :: ConnectionPool -> ActionM ()
+root pool = do
+    maybeUser <- getLoggedInUser pool
+    case maybeUser of
+        Nothing -> text "Course stitch"
+        Just u  -> template $ Template.logoutForm
