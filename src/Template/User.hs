@@ -9,7 +9,7 @@ import Model
 import Database.Persist (Entity, entityVal)
 import Data.Text (Text)
 import Data.Text.Encoding (decodeUtf8)
-import Network.HTTP.Types.Method (methodPost)
+import Network.HTTP.Types.Method (methodPost, methodDelete)
 
 import Template.Template
 
@@ -37,3 +37,10 @@ loginForm = form_ [action_ "/session", method_ post] $ do
         input "Password" "pass" Nothing
     input_ [type_ "submit"]
     where post = decodeUtf8 methodPost
+
+logoutForm :: Html ()
+logoutForm = do
+    form_ [action_ "/session", method_ delete] $
+        input_ [type_ "submit", value_ "Logout"]
+    script_ [src_ "/js/form-methods.js"] ("" :: String)
+    where delete = decodeUtf8 methodDelete
