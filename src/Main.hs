@@ -67,9 +67,9 @@ app runDB = do
     delete "/session" $ Handlers.logout runDB
 
     get "/mastery" $ Handlers.masteries runDB -- For debugging only! Remove me!
-    post "/mastery/resource/:resource" $ Handlers.resourceMasteryCreate runDB
+    put "/mastery/resource/:resource" $ Handlers.resourceMasteryCreate runDB
     delete "/mastery/resource/:resource" $ Handlers.resourceMasteryDelete runDB
-    post "/mastery/concept/:concept" $ Handlers.conceptMasteryCreate runDB
+    put "/mastery/concept/:concept" $ Handlers.conceptMasteryCreate runDB
     delete "/mastery/concept/:concept" $ Handlers.conceptMasteryDelete runDB
 
     middleware $ staticPolicy (noDots >-> addBase "./static")
