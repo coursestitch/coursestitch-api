@@ -71,16 +71,13 @@ resourceDetailed resource rels = do
     resourceText resource
     resourceExternalLink resource $ resourceQuote resource
     
-resourceConcepts :: Bool -> Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
-resourceConcepts loggedIn resource rels = mconcat $ map doRelationship rels where
+resourceConcepts :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
+resourceConcepts resource rels = mconcat $ map doRelationship rels where
     doRelationship (rel, concepts) = do
         resourceConceptsHeading rel
         case concepts of
             [] -> resourceConceptsMissing rel
-            concepts -> unorderedList $ map conceptWithCheckbox concepts
-    conceptWithCheckbox c = do
-        when loggedIn $ input_ [type_ "checkbox"]
-        conceptSimple c
+            concepts -> unorderedList $ map conceptSimple concepts
 
 resourceUri resource = mappend "/resource/" ((fromString . show . entityId) resource)
 resourceLink resource html = link (resourceUri resource) html
