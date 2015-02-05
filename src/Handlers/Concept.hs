@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, RankNTypes #-}
 
 module Handlers.Concept where
 
@@ -9,60 +9,61 @@ import Database.Persist.Sql (toSqlKey)
 
 import Handlers.Handlers
 import qualified Template
+import Model.RunDB
 
-concepts :: ConnectionPool -> ActionM ()
-concepts pool = do
-    conceptList <- liftIO $ runSqlPool getConcepts pool
+concepts :: RunDB -> ActionM ()
+concepts runDB = do
+    conceptList <- runDB getConcepts
     template $ Template.concepts conceptList
 
-conceptNew :: ConnectionPool -> ActionM ()
-conceptNew pool = do
+conceptNew :: RunDB -> ActionM ()
+conceptNew runDB = do
     template $ Template.conceptForm Nothing
 
-conceptCreate :: ConnectionPool -> ActionM ()
-conceptCreate pool = do
+conceptCreate :: RunDB -> ActionM ()
+conceptCreate runDB = do
     createdConcept <- conceptFromParams
 
-    concept <- liftIO $ runSqlPool (newConcept createdConcept) pool
+    concept <- runDB (newConcept createdConcept)
     case concept of
         Nothing      -> conflict409 "A concept with this URL already exists"
         Just concept -> template $ Template.conceptCreated concept Nothing []
 
-concept :: ConnectionPool -> ActionM ()
-concept pool = conceptAction pool $ \name concept topic resources -> do
+concept :: RunDB -> ActionM ()
+concept runDB = conceptAction runDB $ \name concept topic resources -> do
     template $ Template.concept concept topic resources
 
-conceptEdit :: ConnectionPool -> ActionM ()
-conceptEdit pool = conceptAction pool $ \name concept topic resources -> do
+conceptEdit :: RunDB -> ActionM ()
+conceptEdit runDB = conceptAction runDB $ \name concept topic resources -> do
     template $ Template.conceptForm $ Just concept
 
-conceptUpdate :: ConnectionPool -> ActionM ()
-conceptUpdate pool = do
+conceptUpdate :: RunDB -> ActionM ()
+conceptUpdate runDB = do
     updatedConcept <- conceptFromParams
 
-    conceptAction pool $ \name concept topic resources -> do
-            liftIO $ runSqlPool (editConcept name updatedConcept) pool
-            concept' <- liftIO $ runSqlPool (getConcept name) pool
+    conceptAction runDB $ \name concept topic resources -> do
+            runDB (editConcept name updatedConcept)
+            concept' <- runDB (getConcept name)
             case concept' of
                 Nothing                   -> notFound404 "concept"
                 Just (concept, resources) -> template $ Template.conceptUpdated concept topic resources
 
-conceptDelete :: ConnectionPool -> ActionM ()
-conceptDelete pool = do
-    conceptAction pool $ \name concept topic resources -> do
-        liftIO $ runSqlPool (deleteConcept name) pool
+conceptDelete :: RunDB -> ActionM ()
+conceptDelete runDB = do
+    conceptAction runDB $ \name concept topic resources -> do
+        runDB (deleteConcept name)
         template $ Template.conceptDeleted concept topic resources
 
-conceptAction :: ConnectionPool
+conceptAction :: RunDB
                  -> (String -> Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> ActionM ())
                  -> ActionM ()
-conceptAction pool action = do
+conceptAction runDB action = do
     name <- param "concept"
-    concept <- liftIO $ runSqlPool (getConcept name) pool
+    concept <- runDB (getConcept name)
     case concept of
         Nothing                   -> notFound404 "concept"
         Just (concept, resources) -> do
-            topic <- liftIO $ runSqlPool (getConceptTopic concept) pool
+            topic <- runDB (getConceptTopic concept)
             action name concept topic resources
 
 conceptFromParams :: ActionM Concept
