@@ -40,6 +40,14 @@ app pool = do
     delete "/resource/:resource" $ Handlers.resourceDelete pool
     get "/resource/:resource/edit" $ Handlers.resourceEdit pool
 
+    get "/relationship" $ Handlers.relationships pool
+    post "/relationship" $ Handlers.relationshipCreate pool
+    get "/relationship/new" $ Handlers.relationshipNew pool
+    get "/relationship/:relationship" $ Handlers.relationship pool
+    put "/relationship/:relationship" $ Handlers.relationshipUpdate pool
+    delete "/relationship/:relationship" $ Handlers.relationshipDelete pool
+    get "/relationship/:relationship/edit" $ Handlers.relationshipEdit pool
+
     get "/concept" $ Handlers.concepts pool
     post "/concept" $ Handlers.conceptCreate pool
     get "/concept/new" $ Handlers.conceptNew pool
