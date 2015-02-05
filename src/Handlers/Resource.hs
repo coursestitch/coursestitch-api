@@ -17,7 +17,7 @@ resources pool = do
 
 resourceNew :: ConnectionPool -> ActionM ()
 resourceNew pool = do
-    template $ Template.resourceForm Nothing
+    template $ Template.page $ Template.resourceForm Nothing
 
 resourceCreate :: ConnectionPool -> ActionM ()
 resourceCreate pool = do
@@ -38,7 +38,7 @@ resourcePage pool = resourceAction pool $ \id resource concepts -> do
 
 resourceEdit :: ConnectionPool -> ActionM ()
 resourceEdit pool = resourceAction pool $ \id resource concepts -> do
-    template $ Template.resourceForm $ Just resource
+    template $ Template.page $ Template.resourceForm $ Just resource
 
 resourceUpdate :: ConnectionPool -> ActionM ()
 resourceUpdate pool = do
