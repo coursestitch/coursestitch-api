@@ -63,4 +63,16 @@ Session
     user  UserId
     token Token
     deriving Show
+
+ResourceMastery
+    user     UserId
+    resource ResourceId
+    UniqueMasteryUserResource user resource
+    deriving Show
+
+ConceptMastery
+    user    UserId
+    concept ConceptId
+    UniqueMasteryUserConcept user concept
+    deriving Show
 |]

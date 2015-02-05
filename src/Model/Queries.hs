@@ -205,3 +205,33 @@ newSession u = do
 
 deleteSessions :: Token -> SqlPersistT IO ()
 deleteSessions token = deleteWhere [SessionToken P.==. token]
+
+getMasteries :: SqlPersistT IO ([Entity ResourceMastery], [Entity ConceptMastery])
+getMasteries = do
+    rm <- selectList [] []
+    cm <- selectList [] []
+    return (rm, cm)
+
+newResourceMastery :: Entity User -> Entity Resource -> SqlPersistT IO (Maybe (Entity ResourceMastery))
+newResourceMastery user resource = do
+    maybeMasteryKey <- insertUnique mastery
+    case maybeMasteryKey of
+        Nothing  -> return Nothing
+        Just key -> return $ Just (Entity key mastery)
+    where mastery = ResourceMastery (entityKey user) (entityKey resource)
+
+deleteResourceMastery :: Entity User -> Entity Resource -> SqlPersistT IO ()
+deleteResourceMastery user resource = deleteWhere
+    [ResourceMasteryUser P.==. entityKey user, ResourceMasteryResource P.==. entityKey resource]
+
+newConceptMastery :: Entity User -> Entity Concept -> SqlPersistT IO (Maybe (Entity ConceptMastery))
+newConceptMastery user concept = do
+    maybeMasteryKey <- insertUnique mastery
+    case maybeMasteryKey of
+        Nothing  -> return Nothing
+        Just key -> return $ Just (Entity key mastery)
+    where mastery = ConceptMastery (entityKey user) (entityKey concept)
+
+deleteConceptMastery :: Entity User -> Entity Concept -> SqlPersistT IO ()
+deleteConceptMastery user concept = deleteWhere
+    [ConceptMasteryUser P.==. entityKey user, ConceptMasteryConcept P.==. entityKey concept]

@@ -10,7 +10,6 @@ import Crypto.BCrypt (validatePassword)
 import Web.Scotty.Cookie (getCookie, setSimpleCookie)
 import Network.HTTP.Types.Status (forbidden403)
 import Data.Maybe (isJust)
-import Web.Scotty (addHeader)
 
 users :: ConnectionPool -> ActionM ()
 users pool = do
@@ -35,10 +34,15 @@ getLoggedInUser pool = do
 isLoggedIn :: ConnectionPool -> ActionM Bool
 isLoggedIn pool = fmap isJust (getLoggedInUser pool)
 
-authenticate :: ConnectionPool -> ActionM () -> ActionM ()
-authenticate pool action = ifM (isLoggedIn pool) action unauthorised
-    where ifM test t f = test >>= \v -> if v then t else f
-          unauthorised = status forbidden403 >> text "not logged in, sorry"
+authenticate :: ConnectionPool -> (Entity User -> ActionM ()) -> ActionM ()
+authenticate pool action = do
+    maybeUser <- getLoggedInUser pool
+    case maybeUser of
+        Nothing -> status forbidden403 >> text "must be logged in"
+        Just u  -> action u
+
+authenticate_ :: ConnectionPool -> ActionM () -> ActionM ()
+authenticate_ pool action = authenticate pool (const action)
 
 loginForm :: ConnectionPool -> ActionM ()
 loginForm pool = template $ Template.loginForm

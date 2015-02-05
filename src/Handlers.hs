@@ -6,6 +6,7 @@ module Handlers (
     module Handlers.Concept,
     module Handlers.Topic,
     module Handlers.User,
+    module Handlers.Mastery,
     module Handlers.Handlers,
     module Handlers
 ) where
@@ -15,6 +16,7 @@ import Handlers.Relationship
 import Handlers.Concept
 import Handlers.Topic
 import Handlers.User
+import Handlers.Mastery
 import Handlers.Handlers
 
 import Data.Monoid ((<>))
