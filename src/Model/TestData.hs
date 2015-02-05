@@ -14,6 +14,7 @@ testData = do
     functionTopic <- insertUnique $ Topic "Function" "An operation that maps some input variables to some output variable"
     stringTopic <- insertUnique $ Topic "String" "A list of characters"
     howToString <- insertUnique $ Concept stringTopic "How to string"
+    whatIsString <- insertUnique $ Concept stringTopic "What a String is"
     stringGuide <- insertUnique $ Resource {
         resourceTitle = "How does one string? All your questions answered.",
         resourceMedia = "text",
