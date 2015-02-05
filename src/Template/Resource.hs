@@ -10,7 +10,8 @@ import Network.HTTP.Types.Method (methodGet, methodPost, methodPut, methodDelete
 
 import Lucid
 import Model
-import Database.Persist (Entity, entityVal)
+import Database.Persist (Entity, entityKey, entityVal, toBackendKey)
+import Database.Persist.Sql (unSqlBackendKey)
 
 import Template.Template
 import Template.Concept (conceptSimple)
@@ -80,8 +81,10 @@ relationship resource concept = do
     mconcat $ map checkbox [Taught ..]
     
     where checkbox rel = do
-            input_ [id_ "relationship", type_ "checkbox", name_ "relationship"]
-            label_ [for_ "relationship"] $ (toHtml . show) rel
+            input_ [id_ $ id rel, type_ "checkbox", name_ "relationship"]
+            label_ [for_ $ id rel] $ (toHtml . show) rel
+          id rel = mconcat [(fromString . show) rel, key concept]
+          key = (fromString . show . unSqlBackendKey . toBackendKey . entityKey)
 
 resourceDetailed :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
 resourceDetailed resource rels = do
