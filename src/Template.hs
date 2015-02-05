@@ -10,7 +10,7 @@ module Template (
     template
 ) where
 
-import Template.Resource
+import Template.Resource hiding (relationship)
 import Template.Relationship
 import Template.Concept
 import Template.Topic

@@ -38,7 +38,15 @@ resourcePage pool = resourceAction pool $ \id resource concepts -> do
 
 resourceEdit :: ConnectionPool -> ActionM ()
 resourceEdit pool = resourceAction pool $ \id resource concepts -> do
-    template $ Template.page $ Template.resourceForm $ Just resource
+    let keywords = ["String"]
+    topic <- liftIO $ runSqlPool (getTopic $ head keywords) pool
+    let topics = (case topic of
+            Nothing    -> []
+            Just topic -> [topic])
+    
+    template $ Template.page $ do
+        Template.resourceForm $ Just resource
+        Template.resourceRelationships resource topics concepts
 
 resourceUpdate :: ConnectionPool -> ActionM ()
 resourceUpdate pool = do

@@ -64,6 +64,21 @@ resourceForm resource = do
                 Just _  -> decodeUtf8 methodPut
                 Nothing -> decodeUtf8 methodPost
 
+resourceRelationships :: Entity Resource -> [(Entity Topic, [Entity Concept])] -> [(RelationshipType, [Entity Concept])] -> Html ()
+resourceRelationships resource topics relationships = do
+    unorderedList $ map (uncurry (topicRelationships resource)) topics
+
+topicRelationships :: Entity Resource -> Entity Topic -> [Entity Concept] -> Html ()
+topicRelationships resource topic concepts = do
+    h1_ $ (toHtml . topicTitle . entityVal) topic
+    unorderedList $ map (relationship resource) concepts
+
+relationship :: Entity Resource -> Entity Concept -> Html ()
+relationship resource concept = do
+    input_ [id_ "relationship", type_ "checkbox", name_ "relationship"]
+    label_ [for_ "relationship"] $ (toHtml . conceptTitle . entityVal) concept
+
+
 resourceDetailed :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
 resourceDetailed resource rels = do
     resourceLink resource $ resourceHeading resource
@@ -77,7 +92,6 @@ resourceConcepts rel concepts = do
     case concepts of
         [] -> resourceConceptsMissing rel
         concepts -> unorderedList $ map conceptSimple concepts
-
 
 resourceUri resource = mappend "/resource/" ((fromString . show . entityId) resource)
 resourceLink resource html = link (resourceUri resource) html
