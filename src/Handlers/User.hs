@@ -1,9 +1,10 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, RankNTypes #-}
 
 module Handlers.User where
 
 import Handlers.Handlers
 import qualified Template
+import Model.RunDB
 
 import Database.Persist (Entity, entityVal)
 import Crypto.BCrypt (validatePassword)
@@ -11,62 +12,62 @@ import Web.Scotty.Cookie (getCookie, setSimpleCookie)
 import Network.HTTP.Types.Status (forbidden403)
 import Data.Maybe (isJust)
 
-users :: ConnectionPool -> ActionM ()
-users pool = do
-    userList <- liftIO $ runSqlPool getUsers pool
+users :: RunDB -> ActionM ()
+users runDB = do
+    userList <- runDB getUsers
     template $ Template.users userList
 
-user :: ConnectionPool -> ActionM ()
-user pool = do
+user :: RunDB -> ActionM ()
+user runDB = do
     userName <- param "user"
-    userEntity <- liftIO $ runSqlPool (getUser userName) pool
+    userEntity <- runDB (getUser userName)
     case userEntity of
         Nothing -> notFound404 "user"
         Just u  -> template $ Template.user u
 
-getLoggedInUser :: ConnectionPool -> ActionM (Maybe (Entity User))
-getLoggedInUser pool = do
+getLoggedInUser :: RunDB -> ActionM (Maybe (Entity User))
+getLoggedInUser runDB = do
     maybeToken <- getCookie "session"
     case maybeToken of
         Nothing -> return Nothing
-        Just t  -> liftIO $ runSqlPool (getUserForToken (Token t)) pool
+        Just t  -> runDB (getUserForToken (Token t))
 
-isLoggedIn :: ConnectionPool -> ActionM Bool
-isLoggedIn pool = fmap isJust (getLoggedInUser pool)
+isLoggedIn :: RunDB -> ActionM Bool
+isLoggedIn runDB = fmap isJust (getLoggedInUser runDB)
 
-authenticate :: ConnectionPool -> (Entity User -> ActionM ()) -> ActionM ()
-authenticate pool action = do
-    maybeUser <- getLoggedInUser pool
+authenticate :: RunDB -> (Entity User -> ActionM ()) -> ActionM ()
+authenticate runDB action = do
+    maybeUser <- getLoggedInUser runDB
     case maybeUser of
         Nothing -> status forbidden403 >> text "must be logged in"
         Just u  -> action u
 
-authenticate_ :: ConnectionPool -> ActionM () -> ActionM ()
-authenticate_ pool action = authenticate pool (const action)
+authenticate_ :: RunDB -> ActionM () -> ActionM ()
+authenticate_ runDB action = authenticate runDB (const action)
 
-loginForm :: ConnectionPool -> ActionM ()
-loginForm pool = template $ Template.loginForm
+loginForm :: RunDB -> ActionM ()
+loginForm runDB = template $ Template.loginForm
 
-login :: ConnectionPool -> ActionM ()
-login pool = do
+login :: RunDB -> ActionM ()
+login runDB = do
     userName <- param "name"
     userPass <- param "pass"
-    userEntity <- liftIO $ runSqlPool (getUser userName) pool
+    userEntity <- runDB (getUser userName)
     case userEntity of
         Nothing -> notFound404 "user"
         Just u  -> if validatePassword (userHash $ entityVal u) userPass
             then do
-                Token t <- liftIO $ runSqlPool (newSession u) pool
+                Token t <- runDB (newSession u)
                 setSimpleCookie "session" t
                 text "logged in"
             else status forbidden403 >> text "incorrect password"
 
-logout :: ConnectionPool -> ActionM ()
-logout pool = do
+logout :: RunDB -> ActionM ()
+logout runDB = do
     maybeToken <- getCookie "session"
     case maybeToken of
         Nothing -> return ()
         Just t  -> do
-            liftIO $ runSqlPool (deleteSessions (Token t)) pool
+            runDB (deleteSessions (Token t))
             setSimpleCookie "session" ""
             text "logged out"

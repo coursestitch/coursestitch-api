@@ -1,9 +1,10 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, RankNTypes #-}
 
 module Handlers.Mastery where
 
 import Handlers.Handlers
 import qualified Template
+import Model.RunDB
 import Handlers.User (authenticate)
 import Handlers.Resource (resourceAction)
 import Handlers.Concept (conceptAction)
@@ -16,38 +17,40 @@ import Data.Maybe (isJust)
 import Data.Text.Lazy (pack)
 import Data.Monoid (mconcat)
 
-masteries :: ConnectionPool -> ActionM ()
-masteries pool = do
-    (rm, cm) <- liftIO $ runSqlPool getMasteries pool
+masteries :: RunDB -> ActionM ()
+masteries runDB = do
+    (rm, cm) <- runDB getMasteries
     let shownRM = map (pack . show . entityVal) rm
         shownCM = map (pack . show . entityVal) cm
     text $ mconcat $ shownRM ++ shownCM
 
-resourceMasteryCreate :: ConnectionPool -> ActionM ()
-resourceMasteryCreate pool = authenticate pool $ \user ->
-    resourceAction' pool $ \resource -> do
-        maybeMastery <- liftIO $ runSqlPool (newResourceMastery user resource) pool
+resourceMasteryCreate :: RunDB -> ActionM ()
+resourceMasteryCreate runDB = authenticate runDB $ \user ->
+    resourceAction' runDB $ \resource -> do
+        maybeMastery <- runDB (newResourceMastery user resource)
         case maybeMastery of
             Nothing -> conflict409 "Mastery already exists"
             Just m  -> text "created"
 
-resourceMasteryDelete :: ConnectionPool -> ActionM ()
-resourceMasteryDelete pool = authenticate pool $ \user ->
-    resourceAction' pool $ \resource ->
-        liftIO $ runSqlPool (deleteResourceMastery user resource) pool
+resourceMasteryDelete :: RunDB -> ActionM ()
+resourceMasteryDelete runDB = authenticate runDB $ \user ->
+    resourceAction' runDB $ \resource ->
+        runDB (deleteResourceMastery user resource)
 
-conceptMasteryCreate :: ConnectionPool -> ActionM ()
-conceptMasteryCreate pool = authenticate pool $ \user ->
-    conceptAction' pool $ \concept -> do
-        maybeMastery <- liftIO $ runSqlPool (newConceptMastery user concept) pool
+conceptMasteryCreate :: RunDB -> ActionM ()
+conceptMasteryCreate runDB = authenticate runDB $ \user ->
+    conceptAction' runDB $ \concept -> do
+        maybeMastery <- runDB (newConceptMastery user concept)
         case maybeMastery of
             Nothing -> conflict409 "Mastery already exists"
             Just m  -> text "created"
 
-conceptMasteryDelete :: ConnectionPool -> ActionM ()
-conceptMasteryDelete pool = authenticate pool $ \user ->
-    conceptAction' pool $ \concept ->
-        liftIO $ runSqlPool (deleteConceptMastery user concept) pool
+conceptMasteryDelete :: RunDB -> ActionM ()
+conceptMasteryDelete runDB = authenticate runDB $ \user ->
+    conceptAction' runDB $ \concept ->
+        runDB (deleteConceptMastery user concept)
 
-resourceAction' pool action = resourceAction pool (\_ res _   -> action res)
-conceptAction'  pool action = conceptAction  pool (\_ con _ _ -> action con)
+resourceAction' :: RunDB -> (Entity Resource -> ActionM ()) -> ActionM ()
+conceptAction'  :: RunDB -> (Entity Concept  -> ActionM ()) -> ActionM ()
+resourceAction' runDB action = resourceAction runDB (\_ res _   -> action res)
+conceptAction'  runDB action = conceptAction  runDB (\_ con _ _ -> action con)

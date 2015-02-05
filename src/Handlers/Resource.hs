@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, RankNTypes #-}
 
 module Handlers.Resource where
 
@@ -8,62 +8,63 @@ import Data.Int (Int64)
 import Database.Persist (Entity)
 
 import Handlers.Handlers
-import qualified Template
 import Handlers.User (isLoggedIn)
+import qualified Template
+import Model.RunDB
 
-resources :: ConnectionPool -> ActionM ()
-resources pool = do
-    resourceList <- liftIO $ runSqlPool getResources pool
+resources :: RunDB -> ActionM ()
+resources runDB = do
+    resourceList <- runDB getResources
     template $ Template.resources resourceList
 
-resourceNew :: ConnectionPool -> ActionM ()
-resourceNew pool = do
+resourceNew :: RunDB -> ActionM ()
+resourceNew runDB = do
     template $ Template.resourceForm Nothing
 
-resourceCreate :: ConnectionPool -> ActionM ()
-resourceCreate pool = do
+resourceCreate :: RunDB -> ActionM ()
+resourceCreate runDB = do
     createdResource <- resourceFromParams
 
-    resource <- liftIO $ runSqlPool (newResource createdResource) pool
+    resource <- runDB (newResource createdResource)
     case resource of
         Nothing -> conflict409 "A resource with this URL already exists"
         Just resource -> template $ Template.resourceCreated resource []
 
-resource :: ConnectionPool -> ActionM ()
-resource pool = resourceAction pool $ \id resource concepts -> do
-    loggedIn <- isLoggedIn pool
+resource :: RunDB -> ActionM ()
+resource runDB = resourceAction runDB $ \id resource concepts -> do
+    loggedIn <- isLoggedIn runDB
     template $ do
         Template.resource resource concepts
         Template.resourceConcepts loggedIn resource concepts
 
-resourceEdit :: ConnectionPool -> ActionM ()
-resourceEdit pool = resourceAction pool $ \id resource concepts -> do
+resourceEdit :: RunDB -> ActionM ()
+resourceEdit runDB = resourceAction runDB $ \id resource concepts -> do
     template $ Template.resourceForm $ Just resource
 
-resourceUpdate :: ConnectionPool -> ActionM ()
-resourceUpdate pool = do
+resourceUpdate :: RunDB -> ActionM ()
+resourceUpdate runDB = do
     updatedResource <- resourceFromParams
 
-    resourceAction pool $ \id resource concepts -> do
-            liftIO $ runSqlPool (editResource id updatedResource) pool
-            resource' <- liftIO $ runSqlPool (getResource id) pool
+    resourceAction runDB $ \id resource concepts -> do
+            runDB (editResource id updatedResource)
+            resource' <- runDB (getResource id)
             case resource' of
                 Nothing                   -> notFound404 "resource"
                 Just (resource, concepts) -> template $ Template.resourceUpdated resource concepts
 
-resourceDelete :: ConnectionPool -> ActionM ()
-resourceDelete pool = do
-    resourceAction pool $ \id resource concepts -> do
-        liftIO $ runSqlPool (deleteResource id) pool
+resourceDelete :: RunDB -> ActionM ()
+resourceDelete runDB = do
+    resourceAction runDB $ \id resource concepts -> do
+        runDB (deleteResource id)
         template $ Template.resourceDeleted resource concepts
 
-resourceAction :: ConnectionPool -> (Int64 -> Entity Resource -> [(RelationshipType, [Entity Concept])] -> ActionM ()) -> ActionM ()
-resourceAction pool action = do
+resourceAction :: RunDB -> (Int64 -> Entity Resource -> [(RelationshipType, [Entity Concept])] -> ActionM ()) -> ActionM ()
+resourceAction runDB action = do
     id <- param "resource"
     case readMaybe id of
         Nothing -> badRequest400 "Resources should be of the form /resource/<integer>"
         Just id -> do
-            resource <- liftIO $ runSqlPool (getResource id) pool
+            resource <- runDB (getResource id)
             case resource of
                 Nothing                   -> notFound404 "resource"
                 Just (resource, concepts) -> action id resource concepts

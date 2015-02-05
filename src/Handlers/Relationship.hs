@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, RankNTypes #-}
 
 module Handlers.Relationship where
 
@@ -10,70 +10,71 @@ import Database.Persist.Sql (toSqlKey, unSqlBackendKey)
 
 import Handlers.Handlers
 import qualified Template
+import Model.RunDB
 
-relationships :: ConnectionPool -> ActionM ()
-relationships pool = do
-    relationshipList <- liftIO $ runSqlPool getRelationships pool
+relationships :: RunDB -> ActionM ()
+relationships runDB = do
+    relationshipList <- runDB getRelationships
     template $ Template.relationships relationshipList
 
-relationshipNew :: ConnectionPool -> ActionM ()
-relationshipNew pool = do
+relationshipNew :: RunDB -> ActionM ()
+relationshipNew runDB = do
     template $ Template.relationshipForm Nothing
 
-relationshipCreate :: ConnectionPool -> ActionM ()
-relationshipCreate pool = do
+relationshipCreate :: RunDB -> ActionM ()
+relationshipCreate runDB = do
     createdRelationship <- relationshipFromParams
 
     case createdRelationship of
         Nothing -> badRequest400 "Could not read the relationship from the request"
         Just createdRelationship -> do
-            relationship  <- liftIO $ runSqlPool (newRelationship createdRelationship) pool
+            relationship  <- runDB (newRelationship createdRelationship)
             case relationship of
                 Nothing           -> conflict409 "A relationship with this URL already exists"
                 Just relationship -> do
                     let id = (unSqlBackendKey . unRelationshipKey . entityKey) relationship
-                    relationship' <- liftIO $ runSqlPool (getRelationship id) pool
+                    relationship' <- runDB (getRelationship id)
                     case relationship' of
                         Nothing                       -> notFound404 "relationship"
                         Just (rel, resource, concept) -> template $ Template.relationshipCreated relationship resource concept
 
-relationship :: ConnectionPool -> ActionM ()
-relationship pool = relationshipAction pool $ \id relationship resource concept -> do
+relationship :: RunDB -> ActionM ()
+relationship runDB = relationshipAction runDB $ \id relationship resource concept -> do
     template $ Template.relationship relationship resource concept
 
-relationshipEdit :: ConnectionPool -> ActionM ()
-relationshipEdit pool = relationshipAction pool $ \id relationship resource concept -> do
+relationshipEdit :: RunDB -> ActionM ()
+relationshipEdit runDB = relationshipAction runDB $ \id relationship resource concept -> do
     template $ Template.relationshipForm $ Just relationship
 
-relationshipUpdate :: ConnectionPool -> ActionM ()
-relationshipUpdate pool = do
+relationshipUpdate :: RunDB -> ActionM ()
+relationshipUpdate runDB = do
     updatedRelationship <- relationshipFromParams
 
     case updatedRelationship of
         Nothing -> badRequest400 "Could not read the relationship from the request"
         Just updatedRelationship -> do
-            relationshipAction pool $ \id relationship resource concept -> do
-                    liftIO $ runSqlPool (editRelationship id updatedRelationship) pool
-                    relationship' <- liftIO $ runSqlPool (getRelationship id) pool
+            relationshipAction runDB $ \id relationship resource concept -> do
+                    runDB (editRelationship id updatedRelationship)
+                    relationship' <- runDB (getRelationship id)
                     case relationship' of
                         Nothing                                -> notFound404 "relationship"
                         Just (relationship, resource, concept) -> template $ Template.relationshipUpdated relationship resource concept
 
-relationshipDelete :: ConnectionPool -> ActionM ()
-relationshipDelete pool = do
-    relationshipAction pool $ \id relationship resource concept -> do
-        liftIO $ runSqlPool (deleteRelationship id) pool
+relationshipDelete :: RunDB -> ActionM ()
+relationshipDelete runDB = do
+    relationshipAction runDB $ \id relationship resource concept -> do
+        runDB (deleteRelationship id)
         template $ Template.relationshipDeleted relationship resource concept
 
-relationshipAction :: ConnectionPool
+relationshipAction :: RunDB
                  -> (Int64 -> Entity Relationship -> Entity Resource -> Entity Concept -> ActionM ())
                  -> ActionM ()
-relationshipAction pool action = do
+relationshipAction runDB action = do
     id <- param "relationship"
     case readMaybe id of
         Nothing -> badRequest400 "Relationships should be of the form /relationship/<integer>"
         Just id -> do
-            resource <- liftIO $ runSqlPool (getRelationship id) pool
+            resource <- runDB (getRelationship id)
             case resource of
                 Nothing                                -> notFound404 "relationship"
                 Just (relationship, resource, concept) -> action id relationship resource concept
