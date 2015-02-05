@@ -8,6 +8,8 @@ import Lucid
 import Model
 import Database.Persist (Entity, entityVal)
 import Data.Text (Text)
+import Data.Text.Encoding (decodeUtf8)
+import Network.HTTP.Types.Method (methodPost, methodDelete)
 
 import Template.Template
 
@@ -27,3 +29,18 @@ userTitle u = h1_ $ "User " <> toHtml (uName u)
 userLink u = link (userUri u) (toHtml (uName u))
 userUri u = "/user/" <> (uName u)
 uName u = userName $ entityVal u
+
+loginForm :: Html ()
+loginForm = form_ [action_ "/session", method_ post] $ do
+    fieldset_ $ do
+        input "Username" "name" Nothing
+        input "Password" "pass" Nothing
+    input_ [type_ "submit"]
+    where post = decodeUtf8 methodPost
+
+logoutForm :: Html ()
+logoutForm = do
+    form_ [action_ "/session", method_ delete] $
+        input_ [type_ "submit", value_ "Logout"]
+    script_ [src_ "/js/form-methods.js"] ("" :: String)
+    where delete = decodeUtf8 methodDelete

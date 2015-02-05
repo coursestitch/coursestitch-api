@@ -12,7 +12,8 @@
 module Model.Tables where
 
 import Data.Text (Text)
-import Database.Persist
+import Data.ByteString.Char8 (ByteString)
+
 import Database.Persist.TH
 
 import Model.Types
@@ -53,13 +54,11 @@ Relationship
 User
     name Text
     UniqueName name
-    hash Text
-    salt Text
+    hash ByteString
     deriving Show
 
 Session
     user  UserId
     token Token
-    UniqueUserToken user token
     deriving Show
 |]
