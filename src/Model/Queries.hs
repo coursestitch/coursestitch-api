@@ -69,6 +69,43 @@ deleteResource :: Int64 -> SqlPersistT IO ()
 deleteResource id = deleteWhere [ResourceId P.==. toSqlKey id]
 
 
+-- Select all Relationships in the database
+getRelationships :: SqlPersistT IO [Entity Relationship]
+getRelationships = selectList [] []
+
+getRelationship :: Int64 -> SqlPersistT IO (Maybe (Entity Relationship, Entity Resource, Entity Concept))
+getRelationship id = do
+    -- Select relationship with given title from the DB, and the resources associated with it.
+    rels <- select $
+        from $ \(resource `InnerJoin` relationship `InnerJoin` concept) -> do
+        on (resource ^. ResourceId ==. relationship ^. RelationshipResource)
+        on (concept ^. ConceptId   ==. relationship ^. RelationshipConcept)
+        where_ (relationship ^. RelationshipId ==. (val . toSqlKey) id)
+        return (relationship, resource, concept)
+    
+    return $ case rels of
+        []  -> Nothing
+        rel:_ -> Just rel
+
+-- Create a relationship
+newRelationship :: Relationship -> SqlPersistT IO (Maybe (Entity Relationship))
+newRelationship relationship = do
+    key <- insertUnique relationship
+    return $ case key of
+        Just key -> Just $ Entity key relationship
+        Nothing  -> Nothing
+
+-- Update a relationship
+editRelationship :: Int64 -> Relationship -> SqlPersistT IO Relationship
+editRelationship id relationship = do
+    replace (toSqlKey id) relationship
+    return relationship
+
+-- Delete a relationship
+deleteRelationship :: Int64 -> SqlPersistT IO ()
+deleteRelationship id = deleteWhere [RelationshipId P.==. toSqlKey id]
+
+
 -- Select all Concepts in the database
 getConcepts :: SqlPersistT IO [Entity Concept]
 getConcepts = selectList [] []

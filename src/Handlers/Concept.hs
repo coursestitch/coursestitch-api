@@ -44,7 +44,7 @@ conceptUpdate :: ConnectionPool -> ActionM ()
 conceptUpdate pool = do
     updatedConcept <- conceptFromParams
 
-    conceptAction pool $ \name concept topic resourcess -> do
+    conceptAction pool $ \name concept topic resources -> do
             liftIO $ runSqlPool (editConcept name updatedConcept) pool
             concept' <- liftIO $ runSqlPool (getConcept name) pool
             case concept' of
