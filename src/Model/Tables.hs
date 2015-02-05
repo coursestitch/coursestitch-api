@@ -27,7 +27,7 @@ Resource
     title    Text
     media    Text
     url      Text
-    UniqueUrl url
+    UniqueResourceUrl url
     course   Text
     summary  Text
     preview  Text
@@ -37,11 +37,13 @@ Resource
 Concept
     topic TopicId Maybe
     title Text
+    UniqueConceptTitle title
     deriving Show
 
 Topic
     title   Text
     summary Text
+    UniqueTopicTitle title
     deriving Show
 
 Relationship
@@ -53,7 +55,7 @@ Relationship
 
 User
     name Text
-    UniqueName name
+    UniqueUserName name
     hash ByteString
     deriving Show
 
