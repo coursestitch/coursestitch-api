@@ -53,7 +53,8 @@ app pool = do
 
     get "/user" $ Handlers.users pool
     get "/user/:user" $ Handlers.user pool
-    post "/login" $ Handlers.login pool
-    delete "/login" $ Handlers.logout pool
+    get "/session/new" $ Handlers.loginForm pool
+    post "/session" $ Handlers.login pool
+    delete "/session" $ Handlers.logout pool
 
     middleware $ staticPolicy (noDots >-> addBase "./static")
