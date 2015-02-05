@@ -205,3 +205,15 @@ newSession u = do
 
 deleteSessions :: Token -> SqlPersistT IO ()
 deleteSessions token = deleteWhere [SessionToken P.==. token]
+
+newMastery :: Entity User -> Entity Resource -> SqlPersistT IO (Maybe (Entity Mastery))
+newMastery user resource = do
+    maybeMasteryKey <- insertUnique mastery
+    case maybeMasteryKey of
+        Nothing  -> return Nothing
+        Just key -> return $ Just (Entity key mastery)
+    where mastery = Mastery (entityKey user) (entityKey resource)
+
+deleteMastery :: Entity User -> Entity Resource -> SqlPersistT IO ()
+deleteMastery user resource = deleteWhere
+    [MasteryUser P.==. entityKey user, MasteryResource P.==. entityKey resource]
