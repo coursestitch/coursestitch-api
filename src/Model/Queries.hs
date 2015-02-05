@@ -180,7 +180,7 @@ getUsers = selectList [] []
 
 -- Get a single user by their unique name
 getUser :: Text -> SqlPersistT IO (Maybe (Entity User))
-getUser name = getBy $ UniqueName name
+getUser name = getBy $ UniqueUserName name
 
 -- For authentication purposes, see whether we have a Session active for a User
 -- with the given Token.
