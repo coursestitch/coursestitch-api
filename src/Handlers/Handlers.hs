@@ -18,7 +18,7 @@ import Control.Monad.IO.Class (liftIO)
 import Web.Scotty (ActionM, text, param, status)
 import Database.Persist.Sql (ConnectionPool, runSqlPool)
 import Model
-import Model.Queries
+import Model.Queries hiding (relationships)
 import Template (template)
 
 -- Private imports.

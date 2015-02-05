@@ -2,6 +2,7 @@
 
 module Handlers (
     module Handlers.Resource,
+    module Handlers.Relationship,
     module Handlers.Concept,
     module Handlers.Topic,
     module Handlers.User,
@@ -10,6 +11,7 @@ module Handlers (
 ) where
 
 import Handlers.Resource
+import Handlers.Relationship
 import Handlers.Concept
 import Handlers.Topic
 import Handlers.User
