@@ -4,8 +4,12 @@ import Data.Int (Int64)
 
 import Data.String (fromString)
 import Data.Text (Text)
+import Data.Text.Encoding (decodeUtf8)
 import Data.List (unzip3, nub)
 import Data.Maybe (catMaybes, listToMaybe)
+import System.Entropy (getEntropy)
+import Data.ByteString.Base64 (encode)
+import Control.Monad.IO.Class (liftIO)
 
 import qualified Database.Persist as P
 import Database.Persist (Entity, insertUnique, get, entityVal, selectFirst, selectList, deleteWhere)
@@ -152,6 +156,15 @@ getUserForToken token = fmap listToMaybe $ select $
 
 getSession :: Token -> SqlPersistT IO (Maybe (Entity Session))
 getSession token = fmap listToMaybe $ selectList [SessionToken P.==. token] []
+
+newToken :: IO Token
+newToken = fmap (Token . decodeUtf8 . encode) (getEntropy 32)
+
+newSession :: Entity User -> SqlPersistT IO Token
+newSession u = do
+    token <- liftIO newToken
+    insert_ $ Session (entityKey u) token
+    return token
 
 deleteSessions :: Token -> SqlPersistT IO ()
 deleteSessions token = deleteWhere [SessionToken P.==. token]
