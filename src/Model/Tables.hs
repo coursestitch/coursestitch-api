@@ -12,7 +12,8 @@
 module Model.Tables where
 
 import Data.Text (Text)
-import Database.Persist
+import Data.ByteString.Char8 (ByteString)
+
 import Database.Persist.TH
 
 import Model.Types
@@ -26,7 +27,7 @@ Resource
     title    Text
     media    Text
     url      Text
-    UniqueUrl url
+    UniqueResourceUrl url
     course   Text
     summary  Text
     preview  Text
@@ -36,11 +37,13 @@ Resource
 Concept
     topic TopicId Maybe
     title Text
+    UniqueConceptTitle title
     deriving Show
 
 Topic
     title   Text
     summary Text
+    UniqueTopicTitle title
     deriving Show Eq
 
 Relationship
@@ -52,14 +55,12 @@ Relationship
 
 User
     name Text
-    UniqueName name
-    hash Text
-    salt Text
+    UniqueUserName name
+    hash ByteString
     deriving Show
 
 Session
     user  UserId
     token Token
-    UniqueUserToken user token
     deriving Show
 |]

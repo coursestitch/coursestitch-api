@@ -13,7 +13,7 @@ module Handlers.Handlers (
     module Handlers.Handlers
 ) where
 
--- These imports arr re-exported.
+-- These imports are re-exported.
 import Control.Monad.IO.Class (liftIO)
 import Web.Scotty (ActionM, text, param, status)
 import Database.Persist.Sql (ConnectionPool, runSqlPool)

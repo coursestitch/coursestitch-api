@@ -27,5 +27,5 @@ testData = do
         (Just resource, Just concept) -> insertUnique $ Relationship resource Taught concept
         otherwise -> return Nothing
 
-    insertUnique $ User "sally" "sdlj7589fshou47" "blah"
+    insertUnique $ User "sally" "$2y$04$d5rX41FWyMV2eNRcUxeZNuV50vvVjPyRlKQaNTd/ykJELJ38wGVWO"
     return ()
