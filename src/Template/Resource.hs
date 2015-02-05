@@ -5,6 +5,7 @@ module Template.Resource where
 import Data.String (fromString)
 import Data.Text.Encoding (decodeUtf8)
 import Data.Monoid (mappend, mconcat)
+import Control.Monad (when)
 
 import Network.HTTP.Types.Method (methodGet, methodPost, methodPut, methodDelete)
 
@@ -91,14 +92,17 @@ resourceDetailed resource rels = do
     resourceLink resource $ resourceHeading resource
     resourceText resource
     resourceExternalLink resource $ resourceQuote resource
-    mconcat $ map (uncurry resourceConcepts) rels
     
-resourceConcepts :: RelationshipType -> [Entity Concept] -> Html ()
-resourceConcepts rel concepts = do
-    resourceConceptsHeading rel
-    case concepts of
-        [] -> resourceConceptsMissing rel
-        concepts -> unorderedList $ map conceptSimple concepts
+resourceConcepts :: Bool -> Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
+resourceConcepts loggedIn resource rels = mconcat $ map doRelationship rels where
+    doRelationship (rel, concepts) = do
+        resourceConceptsHeading rel
+        case concepts of
+            [] -> resourceConceptsMissing rel
+            concepts -> unorderedList $ map conceptWithCheckbox concepts
+    conceptWithCheckbox c = do
+        when loggedIn $ input_ [type_ "checkbox"]
+        conceptSimple c
 
 resourceUri resource = mappend "/resource/" ((fromString . show . entityId) resource)
 resourceLink resource html = link (resourceUri resource) html

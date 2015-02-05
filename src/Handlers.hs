@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, RankNTypes #-}
 
 module Handlers (
     module Handlers.Resource,
@@ -6,6 +6,7 @@ module Handlers (
     module Handlers.Concept,
     module Handlers.Topic,
     module Handlers.User,
+    module Handlers.Mastery,
     module Handlers.Handlers,
     module Handlers
 ) where
@@ -15,18 +16,20 @@ import Handlers.Relationship
 import Handlers.Concept
 import Handlers.Topic
 import Handlers.User
+import Handlers.Mastery
 import Handlers.Handlers
 
 import Data.Monoid ((<>))
 import Model (userName)
+import Model.RunDB
 import Database.Persist (entityVal)
 import Data.Text.Lazy (fromStrict)
 import Web.Scotty (html)
 import qualified Template
 
-root :: ConnectionPool -> ActionM ()
-root pool = do
-    maybeUser <- getLoggedInUser pool
+root :: RunDB -> ActionM ()
+root runDB = do
+    maybeUser <- getLoggedInUser runDB
     case maybeUser of
         Nothing -> text "Course stitch"
         Just u  -> template $ Template.logoutForm

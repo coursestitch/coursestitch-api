@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, RankNTypes #-}
 
 module Main where
 
@@ -17,6 +17,7 @@ import Web.Scotty (ScottyM, scotty, get, put, post, delete, middleware)
 import qualified Handlers
 import Model (migrateAll)
 import Model.TestData (testData)
+import Model.RunDB
 
 main :: IO ()
 main = do
@@ -26,43 +27,49 @@ main = do
             Just cs -> withPostgresqlPool (fromString cs)
     runNoLoggingT $ withPool 2 $ \pool -> liftIO $ do
         runSqlPool (runMigration migrateAll >> testData) pool
-        scotty 7000 (app pool)
+        scotty 7000 (app (runDB' pool))
 
-app :: ConnectionPool -> ScottyM ()
-app pool = do
-    get "/" $ Handlers.root pool
+app :: RunDB -> ScottyM ()
+app runDB = do
+    get "/" $ Handlers.root runDB
 
-    get "/resource" $ Handlers.resources pool
-    post "/resource" $ Handlers.resourceCreate pool
-    get "/resource/new" $ Handlers.resourceNew pool
-    get "/resource/:resource" $ Handlers.resourcePage pool
-    put "/resource/:resource" $ Handlers.resourceUpdate pool
-    delete "/resource/:resource" $ Handlers.resourceDelete pool
-    get "/resource/:resource/edit" $ Handlers.resourceEdit pool
+    get "/resource" $ Handlers.resources runDB
+    post "/resource" $ Handlers.resourceCreate runDB
+    get "/resource/new" $ Handlers.resourceNew runDB
+    get "/resource/:resource" $ Handlers.resourcePage runDB
+    put "/resource/:resource" $ Handlers.resourceUpdate runDB
+    delete "/resource/:resource" $ Handlers.resourceDelete runDB
+    get "/resource/:resource/edit" $ Handlers.resourceEdit runDB
 
-    get "/relationship" $ Handlers.relationships pool
-    post "/relationship" $ Handlers.relationshipCreate pool
-    get "/relationship/new" $ Handlers.relationshipNew pool
-    get "/relationship/:relationship" $ Handlers.relationship pool
-    put "/relationship/:relationship" $ Handlers.relationshipUpdate pool
-    delete "/relationship/:relationship" $ Handlers.relationshipDelete pool
-    get "/relationship/:relationship/edit" $ Handlers.relationshipEdit pool
+    get "/relationship" $ Handlers.relationships runDB
+    post "/relationship" $ Handlers.relationshipCreate runDB
+    get "/relationship/new" $ Handlers.relationshipNew runDB
+    get "/relationship/:relationship" $ Handlers.relationship runDB
+    put "/relationship/:relationship" $ Handlers.relationshipUpdate runDB
+    delete "/relationship/:relationship" $ Handlers.relationshipDelete runDB
+    get "/relationship/:relationship/edit" $ Handlers.relationshipEdit runDB
 
-    get "/concept" $ Handlers.concepts pool
-    post "/concept" $ Handlers.conceptCreate pool
-    get "/concept/new" $ Handlers.conceptNew pool
-    get "/concept/:concept" $ Handlers.conceptPage pool
-    put "/concept/:concept" $ Handlers.conceptUpdate pool
-    delete "/concept/:concept" $ Handlers.conceptDelete pool
-    get "/concept/:concept/edit" $ Handlers.conceptEdit pool
+    get "/concept" $ Handlers.concepts runDB
+    post "/concept" $ Handlers.conceptCreate runDB
+    get "/concept/new" $ Handlers.conceptNew runDB
+    get "/concept/:concept" $ Handlers.conceptPage runDB
+    put "/concept/:concept" $ Handlers.conceptUpdate runDB
+    delete "/concept/:concept" $ Handlers.conceptDelete runDB
+    get "/concept/:concept/edit" $ Handlers.conceptEdit runDB
 
-    get "/topic" $ Handlers.topics pool
-    get "/topic/:topic" $ Handlers.topic pool
+    get "/topic" $ Handlers.topics runDB
+    get "/topic/:topic" $ Handlers.topic runDB
 
-    get "/user" $ Handlers.users pool
-    get "/user/:user" $ Handlers.user pool
-    get "/session/new" $ Handlers.loginForm pool
-    post "/session" $ Handlers.login pool
-    delete "/session" $ Handlers.logout pool
+    get "/user" $ Handlers.users runDB
+    get "/user/:user" $ Handlers.user runDB
+    get "/session/new" $ Handlers.loginForm runDB
+    post "/session" $ Handlers.login runDB
+    delete "/session" $ Handlers.logout runDB
+
+    get "/mastery" $ Handlers.masteries runDB -- For debugging only! Remove me!
+    put "/mastery/resource/:resource" $ Handlers.resourceMasteryCreate runDB
+    delete "/mastery/resource/:resource" $ Handlers.resourceMasteryDelete runDB
+    put "/mastery/concept/:concept" $ Handlers.conceptMasteryCreate runDB
+    delete "/mastery/concept/:concept" $ Handlers.conceptMasteryDelete runDB
 
     middleware $ staticPolicy (noDots >-> addBase "./static")
