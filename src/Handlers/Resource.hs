@@ -34,10 +34,7 @@ resourceCreate runDB = do
 
 resource :: RunDB -> ActionM ()
 resource runDB = resourceAction runDB $ \id resource concepts -> do
-    loggedIn <- isLoggedIn runDB
-    template $ do
-        Template.resource resource concepts
-        Template.resourceConcepts loggedIn resource concepts
+    template $ Template.resource resource concepts
 
 resourcePage :: RunDB -> ActionM ()
 resourcePage runDB = resourceAction runDB $ \id resource concepts -> do

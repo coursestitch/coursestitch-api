@@ -10,7 +10,7 @@ import Network.HTTP.Types.Method (methodGet, methodPost, methodPut, methodDelete
 
 import Lucid
 import Model
-import Database.Persist (Entity, entityKey, entityVal)
+import Database.Persist (Entity, entityKey, entityVal, toBackendKey)
 import Database.Persist.Sql (unSqlBackendKey)
 
 import Template.Template
@@ -70,7 +70,14 @@ relationshipDetailed relationship resource concept = do
         relationshipHeading relationship
         conceptSimple concept
     
-relationshipUri relationship = mappend "/relationship/" ((fromString . show . unSqlBackendKey . unRelationshipKey . entityKey) relationship)
+relationshipUri relationship = mconcat ["/relationship",
+    "/resource/", resourceKey $ get relationshipResource,
+    "/", fromString . show $ get relationshipRelationship,
+    "/concept/", conceptKey $ get relationshipConcept
+    ]
+    where get f = (f . entityVal) relationship
+          conceptKey  = (fromString . show . unSqlBackendKey . toBackendKey)
+          resourceKey = (fromString . show . unSqlBackendKey . toBackendKey)
 relationshipLink relationship html = link (relationshipUri relationship) html
 
 relationshipHeading = h1_ . toHtml . show . relationshipRelationship . entityVal

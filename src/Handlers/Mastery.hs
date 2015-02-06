@@ -27,28 +27,24 @@ masteries runDB = do
 resourceMasteryCreate :: RunDB -> ActionM ()
 resourceMasteryCreate runDB = authenticate runDB $ \user ->
     resourceAction' runDB $ \resource -> do
-        maybeMastery <- runDB (newResourceMastery user resource)
-        case maybeMastery of
-            Nothing -> conflict409 "Mastery already exists"
-            Just m  -> text "created"
+        maybeMastery <- runDB $ newResourceMastery user resource
+        text "created"
 
 resourceMasteryDelete :: RunDB -> ActionM ()
 resourceMasteryDelete runDB = authenticate runDB $ \user ->
     resourceAction' runDB $ \resource ->
-        runDB (deleteResourceMastery user resource)
+        runDB $ deleteResourceMastery user resource
 
 conceptMasteryCreate :: RunDB -> ActionM ()
 conceptMasteryCreate runDB = authenticate runDB $ \user ->
     conceptAction' runDB $ \concept -> do
-        maybeMastery <- runDB (newConceptMastery user concept)
-        case maybeMastery of
-            Nothing -> conflict409 "Mastery already exists"
-            Just m  -> text "created"
+        maybeMastery <- runDB $ newConceptMastery user concept
+        text "created"
 
 conceptMasteryDelete :: RunDB -> ActionM ()
 conceptMasteryDelete runDB = authenticate runDB $ \user ->
     conceptAction' runDB $ \concept ->
-        runDB (deleteConceptMastery user concept)
+        runDB $ deleteConceptMastery user concept
 
 resourceAction' :: RunDB -> (Entity Resource -> ActionM ()) -> ActionM ()
 conceptAction'  :: RunDB -> (Entity Concept  -> ActionM ()) -> ActionM ()
