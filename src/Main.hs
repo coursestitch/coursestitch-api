@@ -42,12 +42,9 @@ app runDB = do
     get "/resource/:resource/edit" $ Handlers.resourceEdit runDB
 
     get "/relationship" $ Handlers.relationships runDB
-    post "/relationship" $ Handlers.relationshipCreate runDB
-    get "/relationship/new" $ Handlers.relationshipNew runDB
-    get "/relationship/:relationship" $ Handlers.relationship runDB
-    put "/relationship/:relationship" $ Handlers.relationshipUpdate runDB
-    delete "/relationship/:relationship" $ Handlers.relationshipDelete runDB
-    get "/relationship/:relationship/edit" $ Handlers.relationshipEdit runDB
+    get "/relationship/resource/:resource/:relationship/concept/:concept" $ Handlers.relationship runDB
+    put "/relationship/resource/:resource/:relationship/concept/:concept" $ Handlers.relationshipCreate runDB
+    delete "/relationship/resource/:resource/:relationship/concept/:concept" $ Handlers.relationshipDelete runDB
 
     get "/concept" $ Handlers.concepts runDB
     post "/concept" $ Handlers.conceptCreate runDB

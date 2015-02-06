@@ -12,7 +12,7 @@ import Data.ByteString.Base64 (encode)
 import Control.Monad.IO.Class (liftIO)
 
 import qualified Database.Persist as P
-import Database.Persist (Entity, insertUnique, get, entityVal, selectFirst, selectList, deleteWhere)
+import Database.Persist (Entity, insertUnique, insertBy, get, getByValue, entityVal, selectFirst, selectList, deleteWhere)
 import Database.Persist.Sql (SqlPersistT, toSqlKey)
 import Database.Esqueleto
 
@@ -77,37 +77,31 @@ deleteResource id = deleteWhere [ResourceId P.==. toSqlKey id]
 getRelationships :: SqlPersistT IO [Entity Relationship]
 getRelationships = selectList [] []
 
-getRelationship :: Int64 -> SqlPersistT IO (Maybe (Entity Relationship, Entity Resource, Entity Concept))
-getRelationship id = do
-    -- Select relationship with given title from the DB, and the resources associated with it.
-    rels <- select $
-        from $ \(resource `InnerJoin` relationship `InnerJoin` concept) -> do
-        on (resource ^. ResourceId ==. relationship ^. RelationshipResource)
-        on (concept ^. ConceptId   ==. relationship ^. RelationshipConcept)
-        where_ (relationship ^. RelationshipId ==. (val . toSqlKey) id)
-        return (relationship, resource, concept)
-    
-    return $ case rels of
-        []  -> Nothing
-        rel:_ -> Just rel
+-- Select relationship from the DB, and the concept and resource associated with it.
+getRelationship :: Relationship -> SqlPersistT IO (Maybe (Entity Relationship, Entity Resource, Entity Concept))
+getRelationship rel = do
+    let resourceKey = relationshipResource rel
+    let conceptKey  = relationshipConcept rel
+
+    rel' <- getByValue rel
+    resource <- get resourceKey
+    concept <- get conceptKey
+
+    return $ case (rel', resource, concept) of
+        (Just rel, Just resource, Just concept) -> Just (rel, Entity resourceKey resource, Entity conceptKey concept)
+        otherwise -> Nothing
 
 -- Create a relationship
-newRelationship :: Relationship -> SqlPersistT IO (Maybe (Entity Relationship))
+newRelationship :: Relationship -> SqlPersistT IO (Entity Relationship)
 newRelationship relationship = do
-    key <- insertUnique relationship
-    return $ case key of
-        Just key -> Just $ Entity key relationship
-        Nothing  -> Nothing
-
--- Update a relationship
-editRelationship :: Int64 -> Relationship -> SqlPersistT IO Relationship
-editRelationship id relationship = do
-    replace (toSqlKey id) relationship
-    return relationship
+    insertion <- insertBy relationship
+    return $ case insertion of
+        Left entity -> entity
+        Right key   -> Entity key relationship
 
 -- Delete a relationship
-deleteRelationship :: Int64 -> SqlPersistT IO ()
-deleteRelationship id = deleteWhere [RelationshipId P.==. toSqlKey id]
+deleteRelationship :: Entity Relationship -> SqlPersistT IO ()
+deleteRelationship rel = P.delete $ entityKey rel
 
 
 -- Select all Concepts in the database
