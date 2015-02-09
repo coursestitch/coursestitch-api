@@ -69,16 +69,19 @@ resourceDelete runDB = do
         runDB (deleteResource id)
         template $ Template.resourceDeleted resource concepts
 
-resourceAction :: RunDB -> (Int64 -> Entity Resource -> [(RelationshipType, [Entity Concept])] -> ActionM ()) -> ActionM ()
-resourceAction runDB action = do
+withResourceId :: (Int64 -> ActionM ()) -> ActionM ()
+withResourceId action = do
     id <- param "resource"
     case readMaybe id of
         Nothing -> badRequest400 "Resources should be of the form /resource/<integer>"
-        Just id -> do
-            resource <- runDB (getResource id)
-            case resource of
-                Nothing                   -> notFound404 "resource"
-                Just (resource, concepts) -> action id resource concepts
+        Just id -> action id
+
+resourceAction :: RunDB -> (Int64 -> Entity Resource -> [(RelationshipType, [Entity Concept])] -> ActionM ()) -> ActionM ()
+resourceAction runDB action = withResourceId $ \id -> do
+    resource <- runDB (getResource id)
+    case resource of
+        Nothing                   -> notFound404 "resource"
+        Just (resource, concepts) -> action id resource concepts
 
 resourceFromParams :: ActionM Resource
 resourceFromParams = do
