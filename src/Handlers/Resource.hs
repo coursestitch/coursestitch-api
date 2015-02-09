@@ -38,7 +38,9 @@ resource runDB = resourceAction runDB $ \id resource concepts -> do
 
 resourcePage :: RunDB -> ActionM ()
 resourcePage runDB = resourceAction runDB $ \id resource concepts -> do
-    template $ Template.resourcePage resource concepts
+    template $ do
+        Template.resourcePage resource concepts
+        Template.resourceConcepts resource concepts
 
 resourceEdit :: RunDB -> ActionM ()
 resourceEdit runDB = resourceAction runDB $ \id resource concepts -> do
