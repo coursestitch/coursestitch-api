@@ -16,6 +16,7 @@ import Database.Persist.Sql (unSqlBackendKey)
 
 import Template.Template
 import Template.Concept (conceptSimple)
+import Template.Relationship (relationshipUri)
 
 resources :: [Entity Resource] -> Html ()
 resources cs = unorderedList $ map resourceSimple cs
@@ -68,6 +69,8 @@ resourceForm resource = do
 
 resourceRelationships :: Entity Resource -> [(Entity Topic, [Entity Concept])] -> [Entity Relationship] -> Html ()
 resourceRelationships resource topics relationships = do
+    script_ [src_ "/js/request.js"] ("" :: String)
+    script_ [src_ "/js/checkbox-change.js"] ("" :: String)
     unorderedList $ map (uncurry (topicRelationships resource relationships)) topics
 
 topicRelationships :: Entity Resource -> [Entity Relationship] -> Entity Topic -> [Entity Concept] -> Html ()
@@ -82,12 +85,17 @@ relationship resource relationships concept = do
     mconcat $ map checkbox [Taught ..]
     
     where checkbox rel = do
-            input_ ([id_ $ id rel, type_ "checkbox", name_ "relationship"] ++ checked rel)
+            input_ ([id_ $ id rel, type_ "checkbox", name_ "relationship", onchange_ $ update rel] ++ checked rel)
             label_ [for_ $ id rel] $ (toHtml . show) rel
           checked rel = if elem (relationship rel) (map entityVal relationships) then [checked_] else []
           id rel = mconcat [(fromString . show) rel, key concept]
           key = (fromString . show . unSqlBackendKey . toBackendKey . entityKey)
           relationship rel = Relationship (entityKey resource) rel (entityKey concept)
+          update rel = fromString $ concat ["checkboxChange(this,",
+            "request.bind(this, 'PUT', '"++uri (relationship rel)++"'),",
+            "request.bind(this, 'DELETE', '"++uri (relationship rel)++"')",
+            ")"]
+          uri = relationshipUri
 
 resourceDetailed :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
 resourceDetailed resource rels = do
