@@ -5,7 +5,7 @@ module Handlers.Mastery where
 import Handlers.Handlers
 import qualified Template
 import Model.RunDB
-import Handlers.User (authenticate)
+import Handlers.User (whenAuthenticated)
 import Handlers.Resource (resourceAction)
 import Handlers.Concept (conceptAction)
 
@@ -25,24 +25,24 @@ masteries runDB = do
     text $ mconcat $ shownRM ++ shownCM
 
 resourceMasteryCreate :: RunDB -> ActionM ()
-resourceMasteryCreate runDB = authenticate runDB $ \user ->
+resourceMasteryCreate runDB = whenAuthenticated runDB $ \user ->
     resourceAction' runDB $ \resource -> do
         maybeMastery <- runDB $ newResourceMastery user resource
         text "created"
 
 resourceMasteryDelete :: RunDB -> ActionM ()
-resourceMasteryDelete runDB = authenticate runDB $ \user ->
+resourceMasteryDelete runDB = whenAuthenticated runDB $ \user ->
     resourceAction' runDB $ \resource ->
         runDB $ deleteResourceMastery user resource
 
 conceptMasteryCreate :: RunDB -> ActionM ()
-conceptMasteryCreate runDB = authenticate runDB $ \user ->
+conceptMasteryCreate runDB = whenAuthenticated runDB $ \user ->
     conceptAction' runDB $ \concept -> do
         maybeMastery <- runDB $ newConceptMastery user concept
         text "created"
 
 conceptMasteryDelete :: RunDB -> ActionM ()
-conceptMasteryDelete runDB = authenticate runDB $ \user ->
+conceptMasteryDelete runDB = whenAuthenticated runDB $ \user ->
     conceptAction' runDB $ \concept ->
         runDB $ deleteConceptMastery user concept
 
