@@ -14,7 +14,7 @@ import Database.Persist (Entity, entityKey, entityVal, toBackendKey)
 import Database.Persist.Sql (unSqlBackendKey)
 
 import Template.Template
-import Template.Resource (resourceSimple)
+import {-# SOURCE #-} Template.Resource (resourceSimple)
 import Template.Concept (conceptSimple)
 
 relationships :: [Entity Relationship] -> Html ()
@@ -25,22 +25,22 @@ relationship relationship resource concept = article_ $ relationshipDetailed rel
 
 relationshipCreated :: Entity Relationship -> Entity Resource -> Entity Concept -> Html ()
 relationshipCreated rel r c = do
-    p_ $ mconcat [relationshipUri rel, " was created successfully"]
+    p_ $ mconcat [relationshipUri (entityVal rel), " was created successfully"]
     relationship rel r c
 
 relationshipUpdated :: Entity Relationship -> Entity Resource -> Entity Concept -> Html ()
 relationshipUpdated rel r c = do
-    p_ $ mconcat [relationshipUri rel, " was updated successfully"]
+    p_ $ mconcat [relationshipUri (entityVal rel), " was updated successfully"]
     relationship rel r c
 
 relationshipDeleted :: Entity Relationship -> Entity Resource -> Entity Concept -> Html ()
 relationshipDeleted rel r c = do
-    p_ $ mconcat [relationshipUri rel, " was deleted"]
+    p_ $ mconcat [relationshipUri (entityVal rel), " was deleted"]
     relationship rel r c
 
 relationshipSimple :: Entity Relationship -> Html ()
 relationshipSimple relationship = do
-    relationshipLink relationship $ relationshipHeading relationship
+    relationshipLink (entityVal relationship) $ relationshipHeading relationship
 
 relationshipForm :: Maybe (Entity Relationship) -> Html ()
 relationshipForm relationship = do
@@ -57,7 +57,7 @@ relationshipForm relationship = do
           getResourceId f = get (unSqlBackendKey . unResourceKey . f)
           getConceptId f = get (unSqlBackendKey . unConceptKey . f)
           uri = case relationship of
-                Just relationship -> relationshipUri relationship
+                Just relationship -> relationshipUri (entityVal relationship)
                 Nothing       -> "/relationship"
           method = case relationship of
                 Just _  -> decodeUtf8 methodPut
@@ -65,7 +65,7 @@ relationshipForm relationship = do
 
 relationshipDetailed :: Entity Relationship -> Entity Resource -> Entity Concept -> Html ()
 relationshipDetailed relationship resource concept = do
-    relationshipLink relationship $ do
+    relationshipLink (entityVal relationship) $ do
         resourceSimple resource
         relationshipHeading relationship
         conceptSimple concept
@@ -75,7 +75,7 @@ relationshipUri relationship = mconcat ["/relationship",
     "/", fromString . show $ get relationshipRelationship,
     "/concept/", conceptKey $ get relationshipConcept
     ]
-    where get f = (f . entityVal) relationship
+    where get f = f relationship
           conceptKey  = (fromString . show . unSqlBackendKey . toBackendKey)
           resourceKey = (fromString . show . unSqlBackendKey . toBackendKey)
 relationshipLink relationship html = link (relationshipUri relationship) html

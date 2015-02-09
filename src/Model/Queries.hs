@@ -77,6 +77,10 @@ deleteResource id = deleteWhere [ResourceId P.==. toSqlKey id]
 getRelationships :: SqlPersistT IO [Entity Relationship]
 getRelationships = selectList [] []
 
+-- Select all Relationships in the database
+getRelationshipsFromResource :: Entity Resource -> SqlPersistT IO [Entity Relationship]
+getRelationshipsFromResource resource = selectList [RelationshipResource P.==. entityKey resource] []
+
 -- Select relationship from the DB, and the concept and resource associated with it.
 getRelationship :: Relationship -> SqlPersistT IO (Maybe (Entity Relationship, Entity Resource, Entity Concept))
 getRelationship rel = do

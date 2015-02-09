@@ -38,16 +38,19 @@ resource runDB = resourceAction runDB $ \id resource concepts -> do
 
 resourcePage :: RunDB -> ActionM ()
 resourcePage runDB = resourceAction runDB $ \id resource concepts -> do
-    template $ Template.resourcePage resource concepts
+    template $ do
+        Template.resourcePage resource concepts
+        Template.resourceConcepts resource concepts
 
 resourceEdit :: RunDB -> ActionM ()
 resourceEdit runDB = resourceAction runDB $ \id resource concepts -> do
     let keywords = map unpack . map strip . split (==',') $ (resourceKeywords . entityVal) resource
     topics <- runDB (getTopicsFromKeywords $ keywords)
+    relationships <- runDB (getRelationshipsFromResource resource)
     
     template $ Template.page $ do
         Template.resourceForm $ Just resource
-        Template.resourceRelationships resource topics concepts
+        Template.resourceRelationships resource topics relationships
 
 resourceUpdate :: RunDB -> ActionM ()
 resourceUpdate runDB = do
