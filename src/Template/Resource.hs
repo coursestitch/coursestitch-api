@@ -5,13 +5,13 @@ module Template.Resource where
 import Data.String (fromString)
 import Data.Text.Encoding (decodeUtf8)
 import Data.Monoid (mappend, mconcat)
-import Control.Monad (when)
+import Control.Monad (when, liftM3)
 
 import Network.HTTP.Types.Method (methodGet, methodPost, methodPut, methodDelete)
 
 import Lucid
 import Model
-import Database.Persist (Entity, entityKey, entityVal, toBackendKey)
+import Database.Persist (Entity(..), entityKey, entityVal, toBackendKey)
 import Database.Persist.Sql (unSqlBackendKey)
 
 import Template.Template
@@ -66,26 +66,28 @@ resourceForm resource = do
                 Just _  -> decodeUtf8 methodPut
                 Nothing -> decodeUtf8 methodPost
 
-resourceRelationships :: Entity Resource -> [(Entity Topic, [Entity Concept])] -> [(RelationshipType, [Entity Concept])] -> Html ()
+resourceRelationships :: Entity Resource -> [(Entity Topic, [Entity Concept])] -> [Entity Relationship] -> Html ()
 resourceRelationships resource topics relationships = do
-    unorderedList $ map (uncurry (topicRelationships resource)) topics
+    unorderedList $ map (uncurry (topicRelationships resource relationships)) topics
 
-topicRelationships :: Entity Resource -> Entity Topic -> [Entity Concept] -> Html ()
-topicRelationships resource topic concepts = do
+topicRelationships :: Entity Resource -> [Entity Relationship] -> Entity Topic -> [Entity Concept] -> Html ()
+topicRelationships resource relationships topic concepts = do
     h1_ $ (toHtml . topicTitle . entityVal) topic
-    unorderedList $ map (relationship resource) concepts
+    unorderedList $ map (relationship resource relationships) concepts
 
-relationship :: Entity Resource -> Entity Concept -> Html ()
-relationship resource concept = do
+relationship :: Entity Resource -> [Entity Relationship] -> Entity Concept -> Html ()
+relationship resource relationships concept = do
     (toHtml . conceptTitle . entityVal) concept
     br_ []
     mconcat $ map checkbox [Taught ..]
     
     where checkbox rel = do
-            input_ [id_ $ id rel, type_ "checkbox", name_ "relationship"]
+            input_ ([id_ $ id rel, type_ "checkbox", name_ "relationship"] ++ checked rel)
             label_ [for_ $ id rel] $ (toHtml . show) rel
+          checked rel = if elem (relationship rel) (map entityVal relationships) then [checked_] else []
           id rel = mconcat [(fromString . show) rel, key concept]
           key = (fromString . show . unSqlBackendKey . toBackendKey . entityKey)
+          relationship rel = Relationship (entityKey resource) rel (entityKey concept)
 
 resourceDetailed :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
 resourceDetailed resource rels = do

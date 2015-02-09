@@ -51,7 +51,7 @@ Relationship
     relationship RelationshipType
     concept      ConceptId
     UniqueResourceConcept resource concept
-    deriving Show
+    deriving Show Eq
 
 User
     name Text
