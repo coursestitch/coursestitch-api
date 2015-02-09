@@ -10,7 +10,7 @@ import Data.String (fromString)
 import Database.Persist (Entity, entityVal)
 
 import Handlers.Handlers
-import Handlers.User (isLoggedIn)
+import Handlers.User (authenticate)
 import qualified Template
 import Model.RunDB
 
@@ -37,10 +37,16 @@ resource runDB = resourceAction runDB $ \id resource concepts -> do
     template $ Template.resource resource concepts
 
 resourcePage :: RunDB -> ActionM ()
-resourcePage runDB = resourceAction runDB $ \id resource concepts -> do
-    template $ do
-        Template.resourcePage resource concepts
-        Template.resourceConcepts resource concepts
+resourcePage runDB = authenticate runDB fail success where
+    success user = withResourceId $ \id -> do
+        result <- runDB $ getResourceWithConceptMastery user id
+        case result of
+            Nothing -> notFound404 "resource"
+            Just (rs, cs) -> template $ Template.resourceConceptsMastery rs cs
+    fail = resourceAction runDB $ \_ resource concepts -> do
+        template $ do
+            Template.resourcePage resource concepts
+            Template.resourceConcepts resource concepts
 
 resourceEdit :: RunDB -> ActionM ()
 resourceEdit runDB = resourceAction runDB $ \id resource concepts -> do
@@ -69,16 +75,19 @@ resourceDelete runDB = do
         runDB (deleteResource id)
         template $ Template.resourceDeleted resource concepts
 
-resourceAction :: RunDB -> (Int64 -> Entity Resource -> [(RelationshipType, [Entity Concept])] -> ActionM ()) -> ActionM ()
-resourceAction runDB action = do
+withResourceId :: (Int64 -> ActionM ()) -> ActionM ()
+withResourceId action = do
     id <- param "resource"
     case readMaybe id of
         Nothing -> badRequest400 "Resources should be of the form /resource/<integer>"
-        Just id -> do
-            resource <- runDB (getResource id)
-            case resource of
-                Nothing                   -> notFound404 "resource"
-                Just (resource, concepts) -> action id resource concepts
+        Just id -> action id
+
+resourceAction :: RunDB -> (Int64 -> Entity Resource -> [(RelationshipType, [Entity Concept])] -> ActionM ()) -> ActionM ()
+resourceAction runDB action = withResourceId $ \id -> do
+    resource <- runDB (getResource id)
+    case resource of
+        Nothing                   -> notFound404 "resource"
+        Just (resource, concepts) -> action id resource concepts
 
 resourceFromParams :: ActionM Resource
 resourceFromParams = do

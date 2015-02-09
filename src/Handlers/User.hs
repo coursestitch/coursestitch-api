@@ -35,15 +35,19 @@ getLoggedInUser runDB = do
 isLoggedIn :: RunDB -> ActionM Bool
 isLoggedIn runDB = fmap isJust (getLoggedInUser runDB)
 
-authenticate :: RunDB -> (Entity User -> ActionM ()) -> ActionM ()
-authenticate runDB action = do
+whenAuthenticated :: RunDB -> (Entity User -> ActionM ()) -> ActionM ()
+whenAuthenticated runDB action = authenticate runDB fail action
+    where fail = status forbidden403 >> text "must be logged in"
+
+whenAuthenticated_ :: RunDB -> ActionM () -> ActionM ()
+whenAuthenticated_ runDB action = whenAuthenticated runDB (const action)
+
+authenticate :: RunDB -> ActionM () -> (Entity User -> ActionM ()) -> ActionM ()
+authenticate runDB fail success = do
     maybeUser <- getLoggedInUser runDB
     case maybeUser of
-        Nothing -> status forbidden403 >> text "must be logged in"
-        Just u  -> action u
-
-authenticate_ :: RunDB -> ActionM () -> ActionM ()
-authenticate_ runDB action = authenticate runDB (const action)
+        Nothing -> fail
+        Just u  -> success u
 
 loginForm :: RunDB -> ActionM ()
 loginForm runDB = template $ Template.loginForm
