@@ -10,7 +10,7 @@ import Data.String (fromString)
 import Database.Persist (Entity, entityVal)
 
 import Handlers.Handlers
-import Handlers.User (isLoggedIn)
+import Handlers.User (authenticate)
 import qualified Template
 import Model.RunDB
 
@@ -37,10 +37,16 @@ resource runDB = resourceAction runDB $ \id resource concepts -> do
     template $ Template.resource resource concepts
 
 resourcePage :: RunDB -> ActionM ()
-resourcePage runDB = resourceAction runDB $ \id resource concepts -> do
-    template $ do
-        Template.resourcePage resource concepts
-        Template.resourceConcepts resource concepts
+resourcePage runDB = authenticate runDB fail success where
+    success user = withResourceId $ \id -> do
+        result <- runDB $ getResourceWithConceptMastery user id
+        case result of
+            Nothing -> notFound404 "resource"
+            Just (rs, cs) -> template $ Template.resourceConceptsMastery rs cs
+    fail = resourceAction runDB $ \_ resource concepts -> do
+        template $ do
+            Template.resourcePage resource concepts
+            Template.resourceConcepts resource concepts
 
 resourceEdit :: RunDB -> ActionM ()
 resourceEdit runDB = resourceAction runDB $ \id resource concepts -> do
