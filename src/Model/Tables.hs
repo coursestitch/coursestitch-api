@@ -44,14 +44,14 @@ Topic
     title   Text
     summary Text
     UniqueTopicTitle title
-    deriving Show
+    deriving Show Eq
 
 Relationship
     resource     ResourceId
     relationship RelationshipType
     concept      ConceptId
     UniqueResourceConcept resource concept
-    deriving Show
+    deriving Show Eq
 
 User
     name Text

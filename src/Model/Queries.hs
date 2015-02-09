@@ -77,6 +77,10 @@ deleteResource id = deleteWhere [ResourceId P.==. toSqlKey id]
 getRelationships :: SqlPersistT IO [Entity Relationship]
 getRelationships = selectList [] []
 
+-- Select all Relationships in the database
+getRelationshipsFromResource :: Entity Resource -> SqlPersistT IO [Entity Relationship]
+getRelationshipsFromResource resource = selectList [RelationshipResource P.==. entityKey resource] []
+
 -- Select relationship from the DB, and the concept and resource associated with it.
 getRelationship :: Relationship -> SqlPersistT IO (Maybe (Entity Relationship, Entity Resource, Entity Concept))
 getRelationship rel = do
@@ -146,6 +150,18 @@ deleteConcept name = deleteWhere [ConceptTitle P.==. fromString name]
 -- Select all Topics in the database
 getTopics :: SqlPersistT IO [Entity Topic]
 getTopics = selectList [] []
+
+-- Select all Topics in the database
+getTopicsFromKeywords :: [String] -> SqlPersistT IO [(Entity Topic, [Entity Concept])]
+getTopicsFromKeywords kws = do
+    topics <- select $
+        from $ \(topic `InnerJoin` concept) -> do
+        on (just (topic ^. TopicId) ==. concept ^. ConceptTopic)
+        where_ (foldl1 (||.) [topic ^. TopicTitle ==. (val . fromString) kw | kw <- kws])
+        return (topic, concept)
+
+    -- Group together the topics into a list
+    return $ groups topics
 
 getTopic :: String -> SqlPersistT IO (Maybe (Entity Topic, [Entity Concept]))
 getTopic title = do

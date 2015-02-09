@@ -36,7 +36,7 @@ app runDB = do
     get "/resource" $ Handlers.resources runDB
     post "/resource" $ Handlers.resourceCreate runDB
     get "/resource/new" $ Handlers.resourceNew runDB
-    get "/resource/:resource" $ Handlers.resource runDB
+    get "/resource/:resource" $ Handlers.resourcePage runDB
     put "/resource/:resource" $ Handlers.resourceUpdate runDB
     delete "/resource/:resource" $ Handlers.resourceDelete runDB
     get "/resource/:resource/edit" $ Handlers.resourceEdit runDB
@@ -49,7 +49,7 @@ app runDB = do
     get "/concept" $ Handlers.concepts runDB
     post "/concept" $ Handlers.conceptCreate runDB
     get "/concept/new" $ Handlers.conceptNew runDB
-    get "/concept/:concept" $ Handlers.concept runDB
+    get "/concept/:concept" $ Handlers.conceptPage runDB
     put "/concept/:concept" $ Handlers.conceptUpdate runDB
     delete "/concept/:concept" $ Handlers.conceptDelete runDB
     get "/concept/:concept/edit" $ Handlers.conceptEdit runDB

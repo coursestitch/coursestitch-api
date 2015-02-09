@@ -33,6 +33,10 @@ concept :: RunDB -> ActionM ()
 concept runDB = conceptAction runDB $ \name concept topic resources -> do
     template $ Template.concept concept topic resources
 
+conceptPage :: RunDB -> ActionM ()
+conceptPage runDB = conceptAction runDB $ \name concept topic resources -> do
+    template $ Template.conceptPage concept topic resources
+
 conceptEdit :: RunDB -> ActionM ()
 conceptEdit runDB = conceptAction runDB $ \name concept topic resources -> do
     template $ Template.conceptForm $ Just concept

@@ -4,8 +4,10 @@ module Handlers.Resource where
 
 import Text.Read (readMaybe)
 import Data.Int (Int64)
+import Data.Text (strip, split, unpack)
+import Data.String (fromString)
 
-import Database.Persist (Entity)
+import Database.Persist (Entity, entityVal)
 
 import Handlers.Handlers
 import Handlers.User (isLoggedIn)
@@ -19,7 +21,7 @@ resources runDB = do
 
 resourceNew :: RunDB -> ActionM ()
 resourceNew runDB = do
-    template $ Template.resourceForm Nothing
+    template $ Template.page $ Template.resourceForm Nothing
 
 resourceCreate :: RunDB -> ActionM ()
 resourceCreate runDB = do
@@ -34,9 +36,21 @@ resource :: RunDB -> ActionM ()
 resource runDB = resourceAction runDB $ \id resource concepts -> do
     template $ Template.resource resource concepts
 
+resourcePage :: RunDB -> ActionM ()
+resourcePage runDB = resourceAction runDB $ \id resource concepts -> do
+    template $ do
+        Template.resourcePage resource concepts
+        Template.resourceConcepts resource concepts
+
 resourceEdit :: RunDB -> ActionM ()
 resourceEdit runDB = resourceAction runDB $ \id resource concepts -> do
-    template $ Template.resourceForm $ Just resource
+    let keywords = map unpack . map strip . split (==',') $ (resourceKeywords . entityVal) resource
+    topics <- runDB (getTopicsFromKeywords $ keywords)
+    relationships <- runDB (getRelationshipsFromResource resource)
+    
+    template $ Template.page $ do
+        Template.resourceForm $ Just resource
+        Template.resourceRelationships resource topics relationships
 
 resourceUpdate :: RunDB -> ActionM ()
 resourceUpdate runDB = do
