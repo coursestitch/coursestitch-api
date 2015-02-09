@@ -6,7 +6,7 @@ import Data.String (fromString)
 import Data.Text (Text)
 import Data.Text.Encoding (decodeUtf8)
 import Data.List (unzip3, nub)
-import Data.Maybe (catMaybes, listToMaybe)
+import Data.Maybe (catMaybes, listToMaybe, isJust)
 import System.Entropy (getEntropy)
 import Data.ByteString.Base64 (encode)
 import Control.Monad.IO.Class (liftIO)
@@ -53,6 +53,21 @@ getResource id = do
     
     -- Group together the resources into a list
     return $ relationships rs
+
+getResourceWithConceptMastery :: Entity User -> Int64 -> SqlPersistT IO (Maybe (Entity Resource, [(RelationshipType, [(Entity Concept, Bool)])]))
+getResourceWithConceptMastery user id = do
+    rs <- select $
+        from $ \(resource `LeftOuterJoin` relationship `LeftOuterJoin` concept `LeftOuterJoin` conceptMastery) -> do
+        on $ (concept ?. ConceptId ==. conceptMastery ?. ConceptMasteryConcept) &&.
+             (conceptMastery ?. ConceptMasteryUser ==. (just . val . entityKey) user)
+        on $ concept ?. ConceptId ==. relationship ?. RelationshipConcept
+        on $ just (resource ^. ResourceId) ==. relationship ?. RelationshipResource
+        where_ $ (resource ^. ResourceId ==. (val . toSqlKey) id)
+        return (resource, relationship, concept, conceptMastery)
+    return $ relationships $ map rearrange rs
+    where rearrange (a, b, c, d) = case c of
+            Nothing -> (a, b, Nothing)
+            Just c' -> (a, b, Just (c', isJust d))
 
 -- Create a resource
 newResource :: Resource -> SqlPersistT IO (Maybe (Entity Resource))
