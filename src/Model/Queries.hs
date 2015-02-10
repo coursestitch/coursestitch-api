@@ -190,6 +190,14 @@ getTopic title = do
     -- Group together the concepts into a list
     return $ group tcs
 
+-- Create a topic
+newTopic :: Topic -> SqlPersistT IO (Maybe (Entity Topic))
+newTopic topic = do
+    key <- insertUnique topic
+    return $ case key of
+        Just key -> Just $ Entity key topic
+        Nothing  -> Nothing
+
 -- Get the topic entity from the database
 getConceptTopic :: Entity Concept -> SqlPersistT IO (Maybe (Entity Topic))
 getConceptTopic concept = do
