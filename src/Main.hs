@@ -55,6 +55,8 @@ app runDB = do
     get "/concept/:concept/edit" $ Handlers.conceptEdit runDB
 
     get "/topic" $ Handlers.topics runDB
+    post "/topic" $ Handlers.topicCreate runDB
+    get "/topic/new" $ Handlers.topicNew runDB
     get "/topic/:topic" $ Handlers.topic runDB
 
     get "/user" $ Handlers.users runDB
