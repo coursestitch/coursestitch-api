@@ -35,16 +35,24 @@ library
                        CourseStitch.Templates.Concept,
                        CourseStitch.Templates.Resource,
                        CourseStitch.Templates.Relationship,
+                       CourseStitch.Templates.Topic,
+                       CourseStitch.Templates.User,
                        CourseStitch.Handlers,
                        CourseStitch.Handlers.Handlers,
                        CourseStitch.Handlers.Concept,
                        CourseStitch.Handlers.Resource,
+                       CourseStitch.Handlers.Relationship,
+                       CourseStitch.Handlers.Mastery,
+                       CourseStitch.Handlers.Topic,
                        CourseStitch.Handlers.User,
                        CourseStitch.Models,
                        CourseStitch.Models.RunDB,
                        CourseStitch.Models.Queries,
                        CourseStitch.Models.TestData,
-                       CourseStitch
+                       CourseStitch.Models.Types,
+                       CourseStitch.Models.Tables,
+                       CourseStitch,
+                       Web.Scotty.Cookie
   default-language:    Haskell2010
 
 executable coursestitch-web
