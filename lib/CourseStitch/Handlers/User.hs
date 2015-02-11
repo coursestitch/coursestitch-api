@@ -6,7 +6,7 @@ import CourseStitch.Handlers.Utils
 import qualified CourseStitch.Templates as Templates
 import CourseStitch.Models.RunDB
 
-import Crypto.BCrypt (validatePassword)
+import Crypto.BCrypt (validatePassword, hashPasswordUsingPolicy, fastBcryptHashingPolicy)
 import Web.Scotty.Cookie (getCookie, setSimpleCookie)
 import Data.Maybe (isJust)
 
@@ -22,6 +22,25 @@ user runDB = do
     case userEntity of
         Nothing -> notFound404 "user"
         Just u  -> template $ Templates.user u
+
+userCreate :: RunDB -> ActionM ()
+userCreate runDB = do
+    userName <- param "name"
+    userPass <- param "pass"
+    existingUser <- runDB $ getUser userName
+    case existingUser of
+        Just u  -> nameTaken
+        Nothing -> do
+            maybeHash <- liftIO $ hashPassword userPass
+            case maybeHash of
+                Nothing   -> error500 "Hash went wrong"
+                Just hash -> do
+                    newUser <- runDB $ newUser (User userName hash)
+                    case newUser of
+                        Nothing -> nameTaken
+                        Just u  -> template $ Templates.userCreated u
+    where hashPassword = hashPasswordUsingPolicy fastBcryptHashingPolicy
+          nameTaken = conflict409 "A user with that name already exists"
 
 isLoggedIn :: RunDB -> ActionM Bool
 isLoggedIn runDB = fmap isJust (getLoggedInUser runDB)
