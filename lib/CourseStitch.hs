@@ -10,6 +10,7 @@ api :: RunDB -> ScottyM ()
 api runDB = do
     get "/resource" $ Handlers.resources runDB
     post "/resource" $ Handlers.resourceCreate runDB
+    get "/resource/:resource" $ Handlers.resource runDB
     put "/resource/:resource" $ Handlers.resourceUpdate runDB
     delete "/resource/:resource" $ Handlers.resourceDelete runDB
 
@@ -20,6 +21,7 @@ api runDB = do
 
     get "/concept" $ Handlers.concepts runDB
     post "/concept" $ Handlers.conceptCreate runDB
+    get "/concept/:concept" $ Handlers.concept runDB
     put "/concept/:concept" $ Handlers.conceptUpdate runDB
     delete "/concept/:concept" $ Handlers.conceptDelete runDB
 
