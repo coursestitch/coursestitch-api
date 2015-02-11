@@ -16,7 +16,7 @@ import Database.Persist (Entity, insertUnique, insertBy, get, getByValue, entity
 import Database.Persist.Sql (SqlPersistT, toSqlKey)
 import Database.Esqueleto
 
-import CourseStitch.Models
+import CourseStitch.Models.Tables
 
 group :: [(a, Maybe b)] -> Maybe (a, [b])
 group abs = case as of []   -> Nothing

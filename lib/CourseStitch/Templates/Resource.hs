@@ -10,11 +10,12 @@ import Control.Monad (when, liftM3)
 import Network.HTTP.Types.Method (methodGet, methodPost, methodPut, methodDelete)
 
 import Lucid
-import CourseStitch.Models
 import Database.Persist (Entity(..), entityKey, entityVal, toBackendKey)
 import Database.Persist.Sql (unSqlBackendKey)
 
-import CourseStitch.Templates.Templates
+import CourseStitch.Models
+import CourseStitch.Models.Models (entityId)
+import CourseStitch.Templates.Utils
 import CourseStitch.Templates.Concept (conceptSimple)
 import CourseStitch.Templates.Relationship (relationshipUri)
 

@@ -14,7 +14,7 @@ import CourseStitch.Models
 import Database.Persist (Entity(..), entityKey, entityVal, toBackendKey)
 import Database.Persist.Sql (unSqlBackendKey)
 
-import CourseStitch.Templates.Templates
+import CourseStitch.Templates.Utils
 import CourseStitch.Templates.Resource
 import CourseStitch.Templates.Concept (conceptSimple)
 import CourseStitch.Templates.Relationship (relationshipUri)

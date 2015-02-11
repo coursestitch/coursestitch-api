@@ -8,7 +8,7 @@ import Text.Read (readMaybe)
 import Database.Persist (Entity, selectFirst, entityKey, entityVal)
 import Database.Persist.Sql (toSqlKey, unSqlBackendKey)
 
-import CourseStitch.Handlers.Handlers
+import CourseStitch.Handlers.Utils
 import qualified CourseStitch.Templates as Templates
 import CourseStitch.Models.RunDB
 

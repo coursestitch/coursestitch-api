@@ -14,7 +14,7 @@ import Database.Persist (Entity, entityVal)
 import Database.Persist.Sql (unSqlBackendKey)
 
 import CourseStitch.Templates.Concept
-import CourseStitch.Templates.Templates
+import CourseStitch.Templates.Utils
 import Templates.Website (page)
 
 conceptDetailed :: Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> Html ()

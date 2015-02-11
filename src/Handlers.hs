@@ -17,7 +17,7 @@ import Database.Persist (entityVal)
 import Data.Text.Lazy (fromStrict)
 import Web.Scotty (ActionM, text)
 import qualified CourseStitch.Templates as Templates
-import CourseStitch.Templates (template)
+import CourseStitch.Handlers.Utils (template)
 
 root :: RunDB -> ActionM ()
 root runDB = do

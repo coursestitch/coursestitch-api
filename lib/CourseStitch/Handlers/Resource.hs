@@ -9,7 +9,7 @@ import Data.String (fromString)
 
 import Database.Persist (Entity, entityVal)
 
-import CourseStitch.Handlers.Handlers
+import CourseStitch.Handlers.Utils
 import CourseStitch.Handlers.User (authenticate)
 import qualified CourseStitch.Templates as Templates
 import CourseStitch.Models.RunDB

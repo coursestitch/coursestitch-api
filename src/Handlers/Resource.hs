@@ -9,12 +9,12 @@ import Data.String (fromString)
 
 import Database.Persist (Entity, entityVal)
 
-import CourseStitch.Handlers.Handlers
+import CourseStitch.Handlers.Utils
 import CourseStitch.Handlers.User (authenticate)
 import CourseStitch.Handlers.Resource
-import qualified Templates
-import CourseStitch.Handlers (template)
 import CourseStitch.Models.RunDB
+
+import qualified Templates
 
 resourceNew :: RunDB -> ActionM ()
 resourceNew runDB = do

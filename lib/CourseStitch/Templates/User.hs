@@ -11,7 +11,7 @@ import Data.Text (Text)
 import Data.Text.Encoding (decodeUtf8)
 import Network.HTTP.Types.Method (methodPost, methodDelete)
 
-import CourseStitch.Templates.Templates
+import CourseStitch.Templates.Utils
 
 users :: [Entity User] -> Html ()
 users us = unorderedList $ map userSimple us

@@ -11,7 +11,7 @@ import Lucid
 import CourseStitch.Models
 import Database.Persist (Entity, entityVal)
 
-import CourseStitch.Templates.Templates
+import CourseStitch.Templates.Utils
 import CourseStitch.Templates.Concept
 
 topics :: [Entity Topic] -> Html ()

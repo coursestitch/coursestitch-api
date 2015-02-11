@@ -1,16 +1,13 @@
 module CourseStitch.Models (
     module CourseStitch.Models.Tables,
     module CourseStitch.Models.Types,
-    entityId
+    module CourseStitch.Models.RunDB,
+    module CourseStitch.Models.Queries,
+    module CourseStitch.Models.Models
 ) where
 
 import CourseStitch.Models.Tables
 import CourseStitch.Models.Types
-
-
-import Data.Int (Int64)
-
-import Database.Persist (entityKey)
-import Database.Persist.Sql (unSqlBackendKey)
-
-entityId = unSqlBackendKey . unResourceKey . entityKey
+import CourseStitch.Models.RunDB
+import CourseStitch.Models.Queries
+import CourseStitch.Models.Models

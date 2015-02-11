@@ -13,7 +13,7 @@ import CourseStitch.Models
 import Database.Persist (Entity, entityKey, entityVal, toBackendKey)
 import Database.Persist.Sql (unSqlBackendKey)
 
-import CourseStitch.Templates.Templates
+import CourseStitch.Templates.Utils
 import {-# SOURCE #-} CourseStitch.Templates.Resource (resourceSimple)
 import CourseStitch.Templates.Concept (conceptSimple)
 

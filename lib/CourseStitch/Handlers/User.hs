@@ -2,7 +2,7 @@
 
 module CourseStitch.Handlers.User where
 
-import CourseStitch.Handlers.Handlers
+import CourseStitch.Handlers.Utils
 import qualified CourseStitch.Templates as Templates
 import CourseStitch.Models.RunDB
 

@@ -9,7 +9,10 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module CourseStitch.Models.Tables where
+module CourseStitch.Models.Tables (
+    module CourseStitch.Models.Types,
+    module CourseStitch.Models.Tables
+)where
 
 import Data.Text (Text)
 import Data.ByteString.Char8 (ByteString)
