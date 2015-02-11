@@ -26,7 +26,7 @@ resourceCreate runDB = do
 
 resource :: RunDB -> ActionM ()
 resource runDB = resourceAction runDB $ \id resource concepts -> do
-    template $ Templates.resource resource
+    content resource
 
 resourceUpdate :: RunDB -> ActionM ()
 resourceUpdate runDB = do

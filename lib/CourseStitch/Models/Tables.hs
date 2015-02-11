@@ -26,7 +26,7 @@ import CourseStitch.Models.Types
  - http://www.yesodweb.com/book/persistent#persistent_code_generation -}
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
-Resource
+Resource json
     title    Text
     media    Text
     url      Text

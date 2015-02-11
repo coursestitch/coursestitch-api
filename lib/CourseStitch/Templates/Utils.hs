@@ -21,7 +21,7 @@ import Data.Maybe (fromMaybe)
 unorderedList :: [Html ()] -> Html ()
 unorderedList = ul_ . mconcat . (map li_)
 
-link :: Text -> Html () -> Html ()
+link :: Monad m => Text -> HtmlT m () -> HtmlT m ()
 link url html = a_ [href_ url] html
 
 input :: Text -> Text -> Maybe Text -> Html ()

@@ -1,10 +1,13 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, FlexibleInstances, NoMonomorphismRestriction #-}
 
 module CourseStitch.Templates.Resource where
 
 import CourseStitch.Templates.Utils
 import CourseStitch.Templates.Concept (conceptSimple)
 import CourseStitch.Templates.Relationship (relationshipUri)
+
+instance ToHtml (Entity Resource) where
+    toHtml = resourceSimple
 
 resources :: [Entity Resource] -> Html ()
 resources cs = unorderedList $ map resourceSimple cs
@@ -27,11 +30,11 @@ resourceDeleted r = do
     p_ $ mconcat [resourceUri r, " was deleted"]
     resource r
 
-resourceSimple :: Entity Resource -> Html ()
+resourceSimple :: Monad m => Entity Resource -> HtmlT m ()
 resourceSimple resource = do
     resourceLink resource $ resourceHeading resource
 
 resourceUri resource = mappend "/resource/" ((fromString . show . entityId) resource)
-resourceLink resource html = link (resourceUri resource) html
+resourceLink resource = link (resourceUri resource)
 
 resourceHeading = h1_ . toHtml . resourceTitle . entityVal
