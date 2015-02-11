@@ -16,10 +16,6 @@ concepts runDB = do
     conceptList <- runDB getConcepts
     template $ Templates.concepts conceptList
 
-conceptNew :: RunDB -> ActionM ()
-conceptNew runDB = do
-    template $ Templates.conceptForm Nothing
-
 conceptCreate :: RunDB -> ActionM ()
 conceptCreate runDB = do
     createdConcept <- conceptFromParams
@@ -32,10 +28,6 @@ conceptCreate runDB = do
 concept :: RunDB -> ActionM ()
 concept runDB = conceptAction runDB $ \name concept topic resources -> do
     template $ Templates.concept concept
-
-conceptEdit :: RunDB -> ActionM ()
-conceptEdit runDB = conceptAction runDB $ \name concept topic resources -> do
-    template $ Templates.conceptForm $ Just concept
 
 conceptUpdate :: RunDB -> ActionM ()
 conceptUpdate runDB = do

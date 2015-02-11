@@ -31,7 +31,15 @@ library
                        base >=4.6 && <4.7
   hs-source-dirs:      lib
   exposed-modules:     CourseStitch.Templates,
+                       CourseStitch.Templates.Templates,
+                       CourseStitch.Templates.Concept,
+                       CourseStitch.Templates.Resource,
+                       CourseStitch.Templates.Relationship,
                        CourseStitch.Handlers,
+                       CourseStitch.Handlers.Handlers,
+                       CourseStitch.Handlers.Concept,
+                       CourseStitch.Handlers.Resource,
+                       CourseStitch.Handlers.User,
                        CourseStitch.Models,
                        CourseStitch.Models.RunDB,
                        CourseStitch.Models.Queries,

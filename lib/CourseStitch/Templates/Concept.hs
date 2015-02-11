@@ -42,34 +42,6 @@ conceptSimple :: Entity Concept -> Html ()
 conceptSimple concept = do
     conceptLink concept $ conceptHeading concept
 
-conceptForm :: Maybe (Entity Concept) -> Html ()
-conceptForm concept = do
-    form_ [action_ uri, method_ method] $ do
-        fieldset_ $ do
-            input "Title" "title" $ get conceptTitle
-            input "Topic" "topic" $ getConceptTopicId
-        input_ [type_ "submit"]
-
-    script_ [src_ "/js/form-methods.js"] ("" :: String)
-
-    where get f = fmap (f . entityVal) concept
-          getConceptTopicId = fmap (fromString . show . unSqlBackendKey . unTopicKey) getConceptTopic
-          getConceptTopic = do
-            c <- concept
-            (conceptTopic . entityVal) c
-          uri = case concept of
-                Just concept -> conceptUri concept
-                Nothing       -> "/concept"
-          method = case concept of
-                Just _  -> decodeUtf8 methodPut
-                Nothing -> decodeUtf8 methodPost
-
-conceptDetailed :: Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> Html ()
-conceptDetailed concept topic rels = do
-    conceptLink concept $ conceptHeading concept
-    conceptTopicArticle topic
-    mconcat $ map (uncurry conceptResources) rels
-
 conceptTopicArticle :: Maybe (Entity Topic) -> Html ()
 conceptTopicArticle topic = article_ $ do
     case topic of
