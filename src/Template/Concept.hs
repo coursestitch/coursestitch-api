@@ -20,23 +20,23 @@ import {-# SOURCE #-} Template.Resource (resourceSimple)
 concepts :: [Entity Concept] -> Html ()
 concepts cs = unorderedList $ map conceptSimple cs
 
-concept :: Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> Html ()
-concept concept topic resources = article_ $ conceptDetailed concept topic resources
+concept :: Entity Concept -> Html ()
+concept concept = article_ $ conceptSimple concept
 
-conceptCreated :: Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> Html ()
-conceptCreated r t cs = do
-    p_ $ toHtml $ mconcat [conceptUri r, " was created successfully"]
-    concept r t cs
+conceptCreated :: Entity Concept -> Html ()
+conceptCreated c = do
+    p_ $ toHtml $ mconcat [conceptUri c, " was created successfully"]
+    concept c
 
-conceptUpdated :: Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> Html ()
-conceptUpdated r t cs = do
-    p_ $ toHtml $ mconcat [conceptUri r, " was updated successfully"]
-    concept r t cs
+conceptUpdated :: Entity Concept -> Html ()
+conceptUpdated c = do
+    p_ $ toHtml $ mconcat [conceptUri c, " was updated successfully"]
+    concept c
 
-conceptDeleted :: Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> Html ()
-conceptDeleted r t cs = do
-    p_ $ toHtml $ mconcat [conceptUri r, " was deleted"]
-    concept r t cs
+conceptDeleted :: Entity Concept -> Html ()
+conceptDeleted c = do
+    p_ $ toHtml $ mconcat [conceptUri c, " was deleted"]
+    concept c
 
 conceptSimple :: Entity Concept -> Html ()
 conceptSimple concept = do

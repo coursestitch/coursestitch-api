@@ -27,4 +27,4 @@ resourcePage :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Htm
 resourcePage r rels = page $ resourceDetailed r rels
 
 conceptPage :: Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> Html()
-conceptPage c t rs = page $ concept c t rs
+conceptPage c t rs = page $ conceptDetailed c t rs

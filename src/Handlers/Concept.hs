@@ -27,11 +27,11 @@ conceptCreate runDB = do
     concept <- runDB (newConcept createdConcept)
     case concept of
         Nothing      -> conflict409 "A concept with this URL already exists"
-        Just concept -> template $ Template.conceptCreated concept Nothing []
+        Just concept -> template $ Template.conceptCreated concept
 
 concept :: RunDB -> ActionM ()
 concept runDB = conceptAction runDB $ \name concept topic resources -> do
-    template $ Template.concept concept topic resources
+    template $ Template.concept concept
 
 conceptPage :: RunDB -> ActionM ()
 conceptPage runDB = conceptAction runDB $ \name concept topic resources -> do
@@ -50,13 +50,13 @@ conceptUpdate runDB = do
             concept' <- runDB (getConcept name)
             case concept' of
                 Nothing                   -> notFound404 "concept"
-                Just (concept, resources) -> template $ Template.conceptUpdated concept topic resources
+                Just (concept, resources) -> template $ Template.conceptUpdated concept
 
 conceptDelete :: RunDB -> ActionM ()
 conceptDelete runDB = do
     conceptAction runDB $ \name concept topic resources -> do
         runDB (deleteConcept name)
-        template $ Template.conceptDeleted concept topic resources
+        template $ Template.conceptDeleted concept
 
 conceptAction :: RunDB
                  -> (String -> Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> ActionM ())
