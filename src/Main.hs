@@ -46,6 +46,7 @@ app runDB = do
     get "/topic/new" $ Handlers.topicNew runDB
 
     get "/login" $ Handlers.loginForm runDB
+    get "/signup" $ Handlers.signupForm runDB
 
     api runDB
     middleware $ staticPolicy (noDots >-> addBase "./static")
