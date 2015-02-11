@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Template.Topic where
+module CourseStitch.Templates.Topic where
 
 import Data.Text.Encoding (decodeUtf8)
 import Data.Monoid (mappend)
@@ -8,11 +8,11 @@ import Data.Monoid (mappend)
 import Network.HTTP.Types.Method (methodGet, methodPost, methodPut, methodDelete)
 
 import Lucid
-import Model
+import CourseStitch.Models
 import Database.Persist (Entity, entityVal)
 
-import Template.Template
-import Template.Concept
+import CourseStitch.Templates.Templates
+import CourseStitch.Templates.Concept
 
 topics :: [Entity Topic] -> Html ()
 topics ts = unorderedList $ map topicSimple ts

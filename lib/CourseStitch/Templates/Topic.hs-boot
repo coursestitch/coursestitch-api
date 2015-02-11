@@ -1,7 +1,7 @@
-module Template.Topic where
+module CourseStitch.Templates.Topic where
 
 import Lucid
-import Model
+import CourseStitch.Models
 import Database.Persist (Entity)
 
 topicSimple :: Entity Topic -> Html ()

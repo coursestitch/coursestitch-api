@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Template.Concept where
+module CourseStitch.Templates.Concept where
 
 import Data.String (fromString)
 import Data.Text.Encoding (decodeUtf8)
@@ -9,13 +9,13 @@ import Data.Monoid (mappend, mconcat)
 import Network.HTTP.Types.Method (methodGet, methodPost, methodPut, methodDelete)
 
 import Lucid
-import Model
+import CourseStitch.Models
 import Database.Persist (Entity, entityVal)
 import Database.Persist.Sql (unSqlBackendKey)
 
-import Template.Template
-import {-# SOURCE #-} Template.Topic (topicSimple)
-import {-# SOURCE #-} Template.Resource (resourceSimple)
+import CourseStitch.Templates.Templates
+import {-# SOURCE #-} CourseStitch.Templates.Topic (topicSimple)
+import {-# SOURCE #-} CourseStitch.Templates.Resource (resourceSimple)
 
 concepts :: [Entity Concept] -> Html ()
 concepts cs = unorderedList $ map conceptSimple cs

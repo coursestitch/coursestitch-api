@@ -1,17 +1,17 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Template.User where
+module CourseStitch.Templates.User where
 
 import Data.Monoid ((<>))
 
 import Lucid
-import Model
+import CourseStitch.Models
 import Database.Persist (Entity, entityVal)
 import Data.Text (Text)
 import Data.Text.Encoding (decodeUtf8)
 import Network.HTTP.Types.Method (methodPost, methodDelete)
 
-import Template.Template
+import CourseStitch.Templates.Templates
 
 users :: [Entity User] -> Html ()
 users us = unorderedList $ map userSimple us

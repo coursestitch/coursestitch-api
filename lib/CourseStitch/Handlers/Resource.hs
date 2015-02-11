@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings, RankNTypes #-}
 
-module Handlers.Resource where
+module CourseStitch.Handlers.Resource where
 
 import Text.Read (readMaybe)
 import Data.Int (Int64)
@@ -9,19 +9,15 @@ import Data.String (fromString)
 
 import Database.Persist (Entity, entityVal)
 
-import Handlers.Handlers
-import Handlers.User (authenticate)
-import qualified Template
-import Model.RunDB
+import CourseStitch.Handlers.Handlers
+import CourseStitch.Handlers.User (authenticate)
+import qualified CourseStitch.Templates as Templates
+import CourseStitch.Models.RunDB
 
 resources :: RunDB -> ActionM ()
 resources runDB = do
     resourceList <- runDB getResources
-    template $ Template.resources resourceList
-
-resourceNew :: RunDB -> ActionM ()
-resourceNew runDB = do
-    template $ Template.page $ Template.resourceForm Nothing
+    template $ Templates.resources resourceList
 
 resourceCreate :: RunDB -> ActionM ()
 resourceCreate runDB = do
@@ -30,33 +26,11 @@ resourceCreate runDB = do
     resource <- runDB (newResource createdResource)
     case resource of
         Nothing -> conflict409 "A resource with this URL already exists"
-        Just resource -> template $ Template.resourceCreated resource
+        Just resource -> template $ Templates.resourceCreated resource
 
 resource :: RunDB -> ActionM ()
 resource runDB = resourceAction runDB $ \id resource concepts -> do
-    template $ Template.resource resource
-
-resourcePage :: RunDB -> ActionM ()
-resourcePage runDB = authenticate runDB fail success where
-    success user = withResourceId $ \id -> do
-        result <- runDB $ getResourceWithConceptMastery user id
-        case result of
-            Nothing -> notFound404 "resource"
-            Just (rs, cs) -> template $ Template.resourceConceptsMastery rs cs
-    fail = resourceAction runDB $ \_ resource concepts -> do
-        template $ do
-            Template.resourcePage resource concepts
-            Template.resourceConcepts resource concepts
-
-resourceEdit :: RunDB -> ActionM ()
-resourceEdit runDB = resourceAction runDB $ \id resource concepts -> do
-    let keywords = map unpack . map strip . split (==',') $ (resourceKeywords . entityVal) resource
-    topics <- runDB (getTopicsFromKeywords $ keywords)
-    relationships <- runDB (getRelationshipsFromResource resource)
-    
-    template $ Template.page $ do
-        Template.resourceForm $ Just resource
-        Template.resourceRelationships resource topics relationships
+    template $ Templates.resource resource
 
 resourceUpdate :: RunDB -> ActionM ()
 resourceUpdate runDB = do
@@ -67,13 +41,13 @@ resourceUpdate runDB = do
             resource' <- runDB (getResource id)
             case resource' of
                 Nothing                   -> notFound404 "resource"
-                Just (resource, concepts) -> template $ Template.resourceUpdated resource
+                Just (resource, concepts) -> template $ Templates.resourceUpdated resource
 
 resourceDelete :: RunDB -> ActionM ()
 resourceDelete runDB = do
     resourceAction runDB $ \id resource concepts -> do
         runDB (deleteResource id)
-        template $ Template.resourceDeleted resource
+        template $ Templates.resourceDeleted resource
 
 withResourceId :: (Int64 -> ActionM ()) -> ActionM ()
 withResourceId action = do

@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings, RankNTypes #-}
 
-module Handlers.User where
+module CourseStitch.Handlers.User where
 
-import Handlers.Handlers
-import qualified Template
-import Model.RunDB
+import CourseStitch.Handlers.Handlers
+import qualified CourseStitch.Templates as Templates
+import CourseStitch.Models.RunDB
 
 import Database.Persist (Entity, entityVal)
 import Crypto.BCrypt (validatePassword)
@@ -15,7 +15,7 @@ import Data.Maybe (isJust)
 users :: RunDB -> ActionM ()
 users runDB = do
     userList <- runDB getUsers
-    template $ Template.users userList
+    template $ Templates.users userList
 
 user :: RunDB -> ActionM ()
 user runDB = do
@@ -23,7 +23,7 @@ user runDB = do
     userEntity <- runDB (getUser userName)
     case userEntity of
         Nothing -> notFound404 "user"
-        Just u  -> template $ Template.user u
+        Just u  -> template $ Templates.user u
 
 getLoggedInUser :: RunDB -> ActionM (Maybe (Entity User))
 getLoggedInUser runDB = do
@@ -50,7 +50,7 @@ authenticate runDB fail success = do
         Just u  -> success u
 
 loginForm :: RunDB -> ActionM ()
-loginForm runDB = template $ Template.loginForm
+loginForm runDB = template $ Templates.loginForm
 
 login :: RunDB -> ActionM ()
 login runDB = do

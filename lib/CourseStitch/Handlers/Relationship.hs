@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings, RankNTypes #-}
 
-module Handlers.Relationship where
+module CourseStitch.Handlers.Relationship where
 
 import Data.Int (Int64)
 import Text.Read (readMaybe)
@@ -8,14 +8,14 @@ import Text.Read (readMaybe)
 import Database.Persist (Entity, selectFirst, entityKey, entityVal)
 import Database.Persist.Sql (toSqlKey, unSqlBackendKey)
 
-import Handlers.Handlers
-import qualified Template
-import Model.RunDB
+import CourseStitch.Handlers.Handlers
+import qualified CourseStitch.Templates as Templates
+import CourseStitch.Models.RunDB
 
 relationships :: RunDB -> ActionM ()
 relationships runDB = do
     relationshipList <- runDB getRelationships
-    template $ Template.relationships relationshipList
+    template $ Templates.relationships relationshipList
 
 relationshipCreate :: RunDB -> ActionM ()
 relationshipCreate runDB = do
@@ -28,21 +28,21 @@ relationshipCreate runDB = do
             relationship' <- runDB (getRelationship $ entityVal relationship)
             case relationship' of
                 Nothing                       -> notFound404 "relationship"
-                Just (rel, resource, concept) -> template $ Template.relationshipCreated relationship
+                Just (rel, resource, concept) -> template $ Templates.relationshipCreated relationship
 
 relationship :: RunDB -> ActionM ()
 relationship runDB = relationshipAction runDB $ \relationship resource concept -> do
-    template $ Template.relationship relationship
+    template $ Templates.relationship relationship
 
 relationshipEdit :: RunDB -> ActionM ()
 relationshipEdit runDB = relationshipAction runDB $ \relationship resource concept -> do
-    template $ Template.relationshipForm $ Just relationship
+    template $ Templates.relationshipForm $ Just relationship
 
 relationshipDelete :: RunDB -> ActionM ()
 relationshipDelete runDB = do
     relationshipAction runDB $ \relationship resource concept -> do
         runDB (deleteRelationship relationship)
-        template $ Template.relationshipDeleted relationship
+        template $ Templates.relationshipDeleted relationship
 
 relationshipAction :: RunDB
                  -> (Entity Relationship -> Entity Resource -> Entity Concept -> ActionM ())

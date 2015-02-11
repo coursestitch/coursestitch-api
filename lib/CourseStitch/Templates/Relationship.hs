@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Template.Relationship where
+module CourseStitch.Templates.Relationship where
 
 import Data.String (fromString)
 import Data.Text.Encoding (decodeUtf8)
@@ -9,13 +9,13 @@ import Data.Monoid (mappend, mconcat)
 import Network.HTTP.Types.Method (methodGet, methodPost, methodPut, methodDelete)
 
 import Lucid
-import Model
+import CourseStitch.Models
 import Database.Persist (Entity, entityKey, entityVal, toBackendKey)
 import Database.Persist.Sql (unSqlBackendKey)
 
-import Template.Template
-import {-# SOURCE #-} Template.Resource (resourceSimple)
-import Template.Concept (conceptSimple)
+import CourseStitch.Templates.Templates
+import {-# SOURCE #-} CourseStitch.Templates.Resource (resourceSimple)
+import CourseStitch.Templates.Concept (conceptSimple)
 
 relationships :: [Entity Relationship] -> Html ()
 relationships cs = unorderedList $ map relationshipSimple cs

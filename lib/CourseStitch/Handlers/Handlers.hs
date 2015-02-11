@@ -1,25 +1,25 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Handlers.Handlers (
+module CourseStitch.Handlers.Handlers (
     -- Export common symbols used in most handlers.
     module Control.Monad.IO.Class,
     module Web.Scotty,
     module Database.Persist.Sql,
-    module Model,
-    module Model.Queries,
-    module Template,
+    module CourseStitch.Models,
+    module CourseStitch.Models.Queries,
+    module CourseStitch.Templates,
 
     -- And export all symbols defined in this module.
-    module Handlers.Handlers
+    module CourseStitch.Handlers.Handlers
 ) where
 
 -- These imports are re-exported.
 import Control.Monad.IO.Class (liftIO)
 import Web.Scotty (ActionM, text, param, status)
 import Database.Persist.Sql (ConnectionPool, runSqlPool)
-import Model
-import Model.Queries hiding (relationships)
-import Template (template)
+import CourseStitch.Models
+import CourseStitch.Models.Queries hiding (relationships)
+import CourseStitch.Templates (template)
 
 -- Private imports.
 import Data.Monoid (mconcat)

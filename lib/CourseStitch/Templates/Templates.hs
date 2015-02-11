@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Template.Template where
+module CourseStitch.Templates.Templates where
 
 import Data.Text (Text)
 import Data.Maybe (fromMaybe)

@@ -1,19 +1,19 @@
 {-# LANGUAGE OverloadedStrings, RankNTypes #-}
 
-module Handlers.Topic where
+module CourseStitch.Handlers.Topic where
 
-import Handlers.Handlers
-import qualified Template
-import Model.RunDB
+import CourseStitch.Handlers.Handlers
+import qualified CourseStitch.Templates as Templates
+import CourseStitch.Models.RunDB
 
 topics :: RunDB -> ActionM ()
 topics runDB = do
     topicList <- runDB getTopics
-    template $ Template.topics topicList
+    template $ Templates.topics topicList
 
 topicNew :: RunDB -> ActionM ()
 topicNew runDB = do
-    template $ Template.topicForm Nothing
+    template $ Templates.topicForm Nothing
 
 topicCreate :: RunDB -> ActionM ()
 topicCreate runDB = do
@@ -22,14 +22,14 @@ topicCreate runDB = do
     topic <- runDB (newTopic createdTopic)
     case topic of
         Nothing    -> conflict409 "A topic with this URL already exists"
-        Just topic -> template $ Template.topic topic []
+        Just topic -> template $ Templates.topic topic []
 
 topic :: RunDB -> ActionM ()
 topic runDB = do
     title <- param "topic"
     topic <- runDB (getTopic title)
     case topic of Nothing                -> notFound404 "topic"
-                  Just (topic, concepts) -> template $ Template.topic topic concepts
+                  Just (topic, concepts) -> template $ Templates.topic topic concepts
 
 topicFromParams :: ActionM Topic
 topicFromParams = do

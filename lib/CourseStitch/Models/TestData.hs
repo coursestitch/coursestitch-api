@@ -1,11 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Model.TestData where
+module CourseStitch.Models.TestData where
 
 import Database.Persist (Entity, insertUnique, get, entityVal)
 import Database.Persist.Sql (ConnectionPool, runSqlPool, SqlPersistT)
 
-import Model
+import CourseStitch.Models
 
 testData :: SqlPersistT IO ()
 testData = do

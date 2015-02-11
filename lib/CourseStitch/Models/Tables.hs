@@ -9,14 +9,14 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module Model.Tables where
+module CourseStitch.Models.Tables where
 
 import Data.Text (Text)
 import Data.ByteString.Char8 (ByteString)
 
 import Database.Persist.TH
 
-import Model.Types
+import CourseStitch.Models.Types
 
 {- See the following page in the Yesod book for a description of what these
  - quasiquotes generate.

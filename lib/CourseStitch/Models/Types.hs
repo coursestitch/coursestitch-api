@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Model.Types where
+module CourseStitch.Models.Types where
 
 import Data.Text (Text)
 import Database.Persist.TH (derivePersistField)

@@ -1,13 +1,13 @@
 {-# LANGUAGE OverloadedStrings, RankNTypes #-}
 
-module Handlers.Mastery where
+module CourseStitch.Handlers.Mastery where
 
-import Handlers.Handlers
-import qualified Template
-import Model.RunDB
-import Handlers.User (whenAuthenticated)
-import Handlers.Resource (resourceAction)
-import Handlers.Concept (conceptAction)
+import CourseStitch.Handlers.Handlers
+import qualified CourseStitch.Templates as Templates
+import CourseStitch.Models.RunDB
+import CourseStitch.Handlers.User (whenAuthenticated)
+import CourseStitch.Handlers.Resource (resourceAction)
+import CourseStitch.Handlers.Concept (conceptAction)
 
 import Database.Persist (Entity, entityVal)
 import Crypto.BCrypt (validatePassword)

@@ -14,10 +14,10 @@ import Data.String (fromString)
 import Network.Wai.Middleware.Static (staticPolicy, noDots, (>->), addBase)
 import Web.Scotty (ScottyM, scotty, get, put, post, delete, middleware)
 
-import qualified Handlers
-import Model (migrateAll)
-import Model.TestData (testData)
-import Model.RunDB
+import qualified CourseStitch.Handlers as Handlers
+import CourseStitch.Models (migrateAll)
+import CourseStitch.Models.TestData (testData)
+import CourseStitch.Models.RunDB
 
 main :: IO ()
 main = do

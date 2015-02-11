@@ -1,11 +1,11 @@
-module Model (
-    module Model.Tables,
-    module Model.Types,
+module CourseStitch.Models (
+    module CourseStitch.Models.Tables,
+    module CourseStitch.Models.Types,
     entityId
 ) where
 
-import Model.Tables
-import Model.Types
+import CourseStitch.Models.Tables
+import CourseStitch.Models.Types
 
 
 import Data.Int (Int64)

@@ -1,7 +1,7 @@
-module Template.Resource where
+module CourseStitch.Templates.Resource where
 
 import Lucid
-import Model
+import CourseStitch.Models
 import Database.Persist (Entity)
 
 resourceSimple :: Entity Resource -> Html ()

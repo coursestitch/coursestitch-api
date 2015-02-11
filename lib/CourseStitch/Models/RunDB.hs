@@ -1,5 +1,5 @@
 {-# LANGUAGE RankNTypes, FlexibleContexts #-}
-module Model.RunDB where
+module CourseStitch.Models.RunDB where
 
 import Control.Monad.IO.Class (liftIO)
 import Database.Persist.Sql (ConnectionPool, runSqlPool, SqlPersistT)
