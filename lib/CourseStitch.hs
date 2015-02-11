@@ -25,12 +25,10 @@ api runDB = do
 
     get "/topic" $ Handlers.topics runDB
     post "/topic" $ Handlers.topicCreate runDB
-    get "/topic/new" $ Handlers.topicNew runDB
     get "/topic/:topic" $ Handlers.topic runDB
 
     get "/user" $ Handlers.users runDB
     get "/user/:user" $ Handlers.user runDB
-    get "/session/new" $ Handlers.loginForm runDB
     post "/session" $ Handlers.login runDB
     delete "/session" $ Handlers.logout runDB
 

@@ -43,4 +43,8 @@ app runDB = api runDB >> do
     get "/concept/:concept" $ Handlers.conceptPage runDB
     get "/concept/:concept/edit" $ Handlers.conceptEdit runDB
 
+    get "/topic/new" $ Handlers.topicNew runDB
+
+    get "/login" $ Handlers.loginForm runDB
+
     middleware $ staticPolicy (noDots >-> addBase "./static")

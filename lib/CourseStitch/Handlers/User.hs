@@ -49,9 +49,6 @@ authenticate runDB fail success = do
         Nothing -> fail
         Just u  -> success u
 
-loginForm :: RunDB -> ActionM ()
-loginForm runDB = template $ Templates.loginForm
-
 login :: RunDB -> ActionM ()
 login runDB = do
     userName <- param "name"

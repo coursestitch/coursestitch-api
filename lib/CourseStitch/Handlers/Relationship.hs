@@ -34,10 +34,6 @@ relationship :: RunDB -> ActionM ()
 relationship runDB = relationshipAction runDB $ \relationship resource concept -> do
     template $ Templates.relationship relationship
 
-relationshipEdit :: RunDB -> ActionM ()
-relationshipEdit runDB = relationshipAction runDB $ \relationship resource concept -> do
-    template $ Templates.relationshipForm $ Just relationship
-
 relationshipDelete :: RunDB -> ActionM ()
 relationshipDelete runDB = do
     relationshipAction runDB $ \relationship resource concept -> do

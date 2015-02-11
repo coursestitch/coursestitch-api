@@ -2,15 +2,7 @@
 
 module CourseStitch.Templates.Relationship where
 
-import Data.String (fromString)
-import Data.Text.Encoding (decodeUtf8)
-import Data.Monoid (mappend, mconcat)
-
-import Network.HTTP.Types.Method (methodGet, methodPost, methodPut, methodDelete)
-
-import Lucid
-import CourseStitch.Models
-import Database.Persist (Entity, entityKey, entityVal, toBackendKey)
+import Database.Persist (toBackendKey)
 import Database.Persist.Sql (unSqlBackendKey)
 
 import CourseStitch.Templates.Utils
@@ -41,34 +33,6 @@ relationshipDeleted rel = do
 relationshipSimple :: Entity Relationship -> Html ()
 relationshipSimple relationship = do
     relationshipLink (entityVal relationship) $ relationshipHeading relationship
-
-relationshipForm :: Maybe (Entity Relationship) -> Html ()
-relationshipForm relationship = do
-    form_ [action_ uri, method_ method] $ do
-        fieldset_ $ do
-            input "Resource" "resource" $ getResourceId relationshipResource
-            input "Relationship Type" "relationship" $ get relationshipRelationship
-            input "Concept" "concept" $ getConceptId relationshipConcept
-        input_ [type_ "submit"] 
-
-    script_ [src_ "/js/form-methods.js"] ("" :: String)
-
-    where get f = fmap (fromString . show . f . entityVal) relationship
-          getResourceId f = get (unSqlBackendKey . unResourceKey . f)
-          getConceptId f = get (unSqlBackendKey . unConceptKey . f)
-          uri = case relationship of
-                Just relationship -> relationshipUri (entityVal relationship)
-                Nothing       -> "/relationship"
-          method = case relationship of
-                Just _  -> decodeUtf8 methodPut
-                Nothing -> decodeUtf8 methodPost
-
-relationshipDetailed :: Entity Relationship -> Entity Resource -> Entity Concept -> Html ()
-relationshipDetailed relationship resource concept = do
-    relationshipLink (entityVal relationship) $ do
-        resourceSimple resource
-        relationshipHeading relationship
-        conceptSimple concept
     
 relationshipUri relationship = mconcat ["/relationship",
     "/resource/", resourceKey $ get relationshipResource,

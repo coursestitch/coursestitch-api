@@ -2,19 +2,6 @@
 
 module CourseStitch.Templates.Resource where
 
-import Data.String (fromString)
-import Data.Text.Encoding (decodeUtf8)
-import Data.Monoid (mappend, (<>), mconcat)
-import Control.Monad (when, liftM3)
-
-import Network.HTTP.Types.Method (methodGet, methodPost, methodPut, methodDelete)
-
-import Lucid
-import Database.Persist (Entity(..), entityKey, entityVal, toBackendKey)
-import Database.Persist.Sql (unSqlBackendKey)
-
-import CourseStitch.Models
-import CourseStitch.Models.Models (entityId)
 import CourseStitch.Templates.Utils
 import CourseStitch.Templates.Concept (conceptSimple)
 import CourseStitch.Templates.Relationship (relationshipUri)

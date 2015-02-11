@@ -1,12 +1,22 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module CourseStitch.Templates.Utils where
-
-import Data.Text (Text)
-import Data.Maybe (fromMaybe)
-import Data.Monoid (mconcat)
+module CourseStitch.Templates.Utils (
+    module Lucid,
+    module Data.Monoid,
+    module Data.Text,
+    module Data.String,
+    module CourseStitch.Models,
+    module CourseStitch.Templates.Utils
+) where
 
 import Lucid
+import Data.Monoid (mappend, (<>), mconcat)
+import Data.Text (Text)
+import Data.String (fromString)
+
+import CourseStitch.Models
+
+import Data.Maybe (fromMaybe)
 
 unorderedList :: [Html ()] -> Html ()
 unorderedList = ul_ . mconcat . (map li_)
