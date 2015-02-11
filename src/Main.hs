@@ -32,7 +32,7 @@ main = do
         scotty 7000 (app (runDB' pool))
 
 app :: RunDB -> ScottyM ()
-app runDB = api runDB >> do
+app runDB = do
     get "/" $ Handlers.root runDB
 
     get "/resource/new" $ Handlers.resourceNew runDB
@@ -47,4 +47,5 @@ app runDB = api runDB >> do
 
     get "/login" $ Handlers.loginForm runDB
 
+    api runDB
     middleware $ staticPolicy (noDots >-> addBase "./static")
