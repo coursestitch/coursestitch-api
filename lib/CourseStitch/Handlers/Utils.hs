@@ -2,6 +2,7 @@
 
 module CourseStitch.Handlers.Utils (
     -- Export common symbols used in most handlers.
+    module Text.Read,
     module Control.Monad.IO.Class,
     module Web.Scotty,
     module Database.Persist.Sql,
@@ -12,15 +13,15 @@ module CourseStitch.Handlers.Utils (
 ) where
 
 -- These imports are re-exported.
+import Text.Read (readMaybe)
 import Control.Monad.IO.Class (liftIO)
 import Web.Scotty (ActionM, text, param, status)
-import Database.Persist.Sql (ConnectionPool, runSqlPool)
+import Database.Persist.Sql (toSqlKey, ConnectionPool, runSqlPool)
 import CourseStitch.Models
-import CourseStitch.Models.Queries hiding (relationships)
 
 -- Private imports.
 import Data.Monoid (mconcat)
-import Network.HTTP.Types.Status (status409, status404, status400)
+import Network.HTTP.Types.Status (status409, status404, status403, status400)
 
 import Web.Scotty (ActionM, raw, setHeader)
 import Lucid (Html, renderBS)
@@ -40,4 +41,8 @@ notFound404 entity = do
 
 badRequest400 msg = do
     status status400
+    text msg
+
+forbidden403 msg = do
+    status status403
     text msg

@@ -2,15 +2,8 @@
 
 module CourseStitch.Handlers.Relationship where
 
-import Data.Int (Int64)
-import Text.Read (readMaybe)
-
-import Database.Persist (Entity, selectFirst, entityKey, entityVal)
-import Database.Persist.Sql (toSqlKey, unSqlBackendKey)
-
 import CourseStitch.Handlers.Utils
 import qualified CourseStitch.Templates as Templates
-import CourseStitch.Models.RunDB
 
 relationships :: RunDB -> ActionM ()
 relationships runDB = do

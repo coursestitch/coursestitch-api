@@ -2,17 +2,13 @@
 
 module CourseStitch.Handlers.Resource where
 
-import Text.Read (readMaybe)
 import Data.Int (Int64)
 import Data.Text (strip, split, unpack)
 import Data.String (fromString)
 
-import Database.Persist (Entity, entityVal)
-
 import CourseStitch.Handlers.Utils
 import CourseStitch.Handlers.User (authenticate)
 import qualified CourseStitch.Templates as Templates
-import CourseStitch.Models.RunDB
 
 resources :: RunDB -> ActionM ()
 resources runDB = do

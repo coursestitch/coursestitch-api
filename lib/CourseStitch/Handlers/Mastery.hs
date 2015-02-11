@@ -4,15 +4,12 @@ module CourseStitch.Handlers.Mastery where
 
 import CourseStitch.Handlers.Utils
 import qualified CourseStitch.Templates as Templates
-import CourseStitch.Models.RunDB
 import CourseStitch.Handlers.User (whenAuthenticated)
 import CourseStitch.Handlers.Resource (resourceAction)
 import CourseStitch.Handlers.Concept (conceptAction)
 
-import Database.Persist (Entity, entityVal)
 import Crypto.BCrypt (validatePassword)
 import Web.Scotty.Cookie (getCookie, setSimpleCookie)
-import Network.HTTP.Types.Status (forbidden403)
 import Data.Maybe (isJust)
 import Data.Text.Lazy (pack)
 import Data.Monoid (mconcat)

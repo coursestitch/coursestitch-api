@@ -6,10 +6,8 @@ import CourseStitch.Handlers.Utils
 import qualified CourseStitch.Templates as Templates
 import CourseStitch.Models.RunDB
 
-import Database.Persist (Entity, entityVal)
 import Crypto.BCrypt (validatePassword)
 import Web.Scotty.Cookie (getCookie, setSimpleCookie)
-import Network.HTTP.Types.Status (forbidden403)
 import Data.Maybe (isJust)
 
 users :: RunDB -> ActionM ()
@@ -25,6 +23,9 @@ user runDB = do
         Nothing -> notFound404 "user"
         Just u  -> template $ Templates.user u
 
+isLoggedIn :: RunDB -> ActionM Bool
+isLoggedIn runDB = fmap isJust (getLoggedInUser runDB)
+
 getLoggedInUser :: RunDB -> ActionM (Maybe (Entity User))
 getLoggedInUser runDB = do
     maybeToken <- getCookie "session"
@@ -32,12 +33,9 @@ getLoggedInUser runDB = do
         Nothing -> return Nothing
         Just t  -> runDB (getUserForToken (Token t))
 
-isLoggedIn :: RunDB -> ActionM Bool
-isLoggedIn runDB = fmap isJust (getLoggedInUser runDB)
-
 whenAuthenticated :: RunDB -> (Entity User -> ActionM ()) -> ActionM ()
 whenAuthenticated runDB action = authenticate runDB fail action
-    where fail = status forbidden403 >> text "must be logged in"
+    where fail = forbidden403 "must be logged in"
 
 whenAuthenticated_ :: RunDB -> ActionM () -> ActionM ()
 whenAuthenticated_ runDB action = whenAuthenticated runDB (const action)
@@ -61,7 +59,7 @@ login runDB = do
                 Token t <- runDB (newSession u)
                 setSimpleCookie "session" t
                 text "logged in"
-            else status forbidden403 >> text "incorrect password"
+            else forbidden403 "incorrect password"
 
 logout :: RunDB -> ActionM ()
 logout runDB = do
