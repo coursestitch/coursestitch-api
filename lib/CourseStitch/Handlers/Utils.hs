@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, FlexibleContexts #-}
 
 module CourseStitch.Handlers.Utils (
     -- Export common symbols used in most handlers.
@@ -20,16 +20,39 @@ import Database.Persist.Sql (toSqlKey, ConnectionPool, runSqlPool)
 import CourseStitch.Models
 
 -- Private imports.
+import Data.Text.Lazy (isInfixOf)
 import Data.Monoid (mconcat)
 import Network.HTTP.Types.Status (status409, status404, status403, status400)
 
-import Web.Scotty (ActionM, raw, setHeader)
-import Lucid (Html, renderBS)
+import Web.Scotty (ActionM, raw, json, setHeader, header)
+import Database.Persist (entityIdToJSON, PersistEntity, Key)
+import Data.Aeson (ToJSON, toJSON)
+import Lucid (Html, renderBS, ToHtml, toHtml)
 
 template :: Html () -> ActionM ()
 template html = do
     setHeader "Content-Type" "text/html"
     raw . renderBS $ html
+
+htmlContent :: ToHtml a => a -> ActionM ()
+htmlContent entity = do
+    setHeader "Content-Type" "text/html"
+    raw . renderBS . toHtml $ entity
+
+jsonContent :: ToJSON a => a -> ActionM()
+jsonContent entity = do
+    setHeader "Content-Type" "application/json"
+    json . toJSON $ entity
+
+content entity = do
+    acceptType <- header "Accept"
+    contentFromAcceptType acceptType $ entity
+
+contentFromAcceptType Nothing = htmlContent
+contentFromAcceptType (Just accepts)
+    | "text/html"        `isInfixOf` accepts = htmlContent
+    | "application/json" `isInfixOf` accepts = jsonContent
+    | otherwise                              = htmlContent
 
 conflict409 msg = do
     status status409
