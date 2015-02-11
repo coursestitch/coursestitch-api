@@ -28,11 +28,11 @@ relationshipCreate runDB = do
             relationship' <- runDB (getRelationship $ entityVal relationship)
             case relationship' of
                 Nothing                       -> notFound404 "relationship"
-                Just (rel, resource, concept) -> template $ Template.relationshipCreated relationship resource concept
+                Just (rel, resource, concept) -> template $ Template.relationshipCreated relationship
 
 relationship :: RunDB -> ActionM ()
 relationship runDB = relationshipAction runDB $ \relationship resource concept -> do
-    template $ Template.relationship relationship resource concept
+    template $ Template.relationship relationship
 
 relationshipEdit :: RunDB -> ActionM ()
 relationshipEdit runDB = relationshipAction runDB $ \relationship resource concept -> do
@@ -42,7 +42,7 @@ relationshipDelete :: RunDB -> ActionM ()
 relationshipDelete runDB = do
     relationshipAction runDB $ \relationship resource concept -> do
         runDB (deleteRelationship relationship)
-        template $ Template.relationshipDeleted relationship resource concept
+        template $ Template.relationshipDeleted relationship
 
 relationshipAction :: RunDB
                  -> (Entity Relationship -> Entity Resource -> Entity Concept -> ActionM ())

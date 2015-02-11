@@ -20,23 +20,23 @@ import Template.Concept (conceptSimple)
 relationships :: [Entity Relationship] -> Html ()
 relationships cs = unorderedList $ map relationshipSimple cs
 
-relationship :: Entity Relationship -> Entity Resource -> Entity Concept -> Html ()
-relationship relationship resource concept = article_ $ relationshipDetailed relationship resource concept
+relationship :: Entity Relationship -> Html ()
+relationship relationship = article_ $ relationshipSimple relationship
 
-relationshipCreated :: Entity Relationship -> Entity Resource -> Entity Concept -> Html ()
-relationshipCreated rel r c = do
+relationshipCreated :: Entity Relationship -> Html ()
+relationshipCreated rel = do
     p_ $ mconcat [relationshipUri (entityVal rel), " was created successfully"]
-    relationship rel r c
+    relationship rel
 
-relationshipUpdated :: Entity Relationship -> Entity Resource -> Entity Concept -> Html ()
-relationshipUpdated rel r c = do
+relationshipUpdated :: Entity Relationship -> Html ()
+relationshipUpdated rel = do
     p_ $ mconcat [relationshipUri (entityVal rel), " was updated successfully"]
-    relationship rel r c
+    relationship rel
 
-relationshipDeleted :: Entity Relationship -> Entity Resource -> Entity Concept -> Html ()
-relationshipDeleted rel r c = do
+relationshipDeleted :: Entity Relationship -> Html ()
+relationshipDeleted rel = do
     p_ $ mconcat [relationshipUri (entityVal rel), " was deleted"]
-    relationship rel r c
+    relationship rel
 
 relationshipSimple :: Entity Relationship -> Html ()
 relationshipSimple relationship = do
