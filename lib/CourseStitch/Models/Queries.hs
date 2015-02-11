@@ -224,6 +224,13 @@ getUserForToken token = fmap listToMaybe $ select $
     where_ (session ^. SessionToken ==. val token)
     return user
 
+newUser :: User -> SqlPersistT IO (Maybe (Entity User))
+newUser user = do
+    key <- insertUnique user
+    return $ case key of
+        Just key -> Just $ Entity key user
+        Nothing  -> Nothing
+
 getSession :: Token -> SqlPersistT IO (Maybe (Entity Session))
 getSession token = fmap listToMaybe $ selectList [SessionToken P.==. token] []
 
