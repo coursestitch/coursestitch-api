@@ -21,23 +21,23 @@ import Template.Relationship (relationshipUri)
 resources :: [Entity Resource] -> Html ()
 resources cs = unorderedList $ map resourceSimple cs
 
-resource :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
-resource resource concepts = article_ $ resourceDetailed resource concepts
+resource :: Entity Resource -> Html ()
+resource resource = article_ $ resourceSimple resource
 
-resourceCreated :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
-resourceCreated r cs = do
+resourceCreated :: Entity Resource -> Html ()
+resourceCreated r = do
     p_ $ mconcat [resourceUri r, " was created successfully"]
-    resource r cs
+    resource r
 
-resourceUpdated :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
-resourceUpdated r cs = do
+resourceUpdated :: Entity Resource -> Html ()
+resourceUpdated r = do
     p_ $ mconcat [resourceUri r, " was updated successfully"]
-    resource r cs
+    resource r
 
-resourceDeleted :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
-resourceDeleted r cs = do
+resourceDeleted :: Entity Resource -> Html ()
+resourceDeleted r = do
     p_ $ mconcat [resourceUri r, " was deleted"]
-    resource r cs
+    resource r
 
 resourceSimple :: Entity Resource -> Html ()
 resourceSimple resource = do

@@ -24,7 +24,7 @@ page body = do
     where css_ url = link_ [type_ "text/css", rel_ "stylesheet", href_ url]
 
 resourcePage :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html()
-resourcePage r rels = page $ resource r rels
+resourcePage r rels = page $ resourceDetailed r rels
 
 conceptPage :: Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> Html()
 conceptPage c t rs = page $ concept c t rs

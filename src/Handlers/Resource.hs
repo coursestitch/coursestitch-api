@@ -30,11 +30,11 @@ resourceCreate runDB = do
     resource <- runDB (newResource createdResource)
     case resource of
         Nothing -> conflict409 "A resource with this URL already exists"
-        Just resource -> template $ Template.resourceCreated resource []
+        Just resource -> template $ Template.resourceCreated resource
 
 resource :: RunDB -> ActionM ()
 resource runDB = resourceAction runDB $ \id resource concepts -> do
-    template $ Template.resource resource concepts
+    template $ Template.resource resource
 
 resourcePage :: RunDB -> ActionM ()
 resourcePage runDB = authenticate runDB fail success where
@@ -67,13 +67,13 @@ resourceUpdate runDB = do
             resource' <- runDB (getResource id)
             case resource' of
                 Nothing                   -> notFound404 "resource"
-                Just (resource, concepts) -> template $ Template.resourceUpdated resource concepts
+                Just (resource, concepts) -> template $ Template.resourceUpdated resource
 
 resourceDelete :: RunDB -> ActionM ()
 resourceDelete runDB = do
     resourceAction runDB $ \id resource concepts -> do
         runDB (deleteResource id)
-        template $ Template.resourceDeleted resource concepts
+        template $ Template.resourceDeleted resource
 
 withResourceId :: (Int64 -> ActionM ()) -> ActionM ()
 withResourceId action = do
