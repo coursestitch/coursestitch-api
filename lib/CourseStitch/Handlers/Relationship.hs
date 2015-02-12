@@ -8,7 +8,7 @@ import qualified CourseStitch.Templates as Templates
 relationships :: RunDB -> ActionM ()
 relationships runDB = do
     relationshipList <- runDB getRelationships
-    template $ Templates.relationships relationshipList
+    content relationshipList
 
 relationshipCreate :: RunDB -> ActionM ()
 relationshipCreate runDB = do
@@ -21,7 +21,7 @@ relationshipCreate runDB = do
             relationship' <- runDB (getRelationship $ entityVal relationship)
             case relationship' of
                 Nothing                       -> notFound404 "relationship"
-                Just (rel, resource, concept) -> template $ Templates.relationshipCreated relationship
+                Just (rel, resource, concept) -> content relationship
 
 relationship :: RunDB -> ActionM ()
 relationship runDB = relationshipAction runDB $ \relationship resource concept -> do
@@ -31,7 +31,7 @@ relationshipDelete :: RunDB -> ActionM ()
 relationshipDelete runDB = do
     relationshipAction runDB $ \relationship resource concept -> do
         runDB (deleteRelationship relationship)
-        template $ Templates.relationshipDeleted relationship
+        content relationship
 
 relationshipAction :: RunDB
                  -> (Entity Relationship -> Entity Resource -> Entity Concept -> ActionM ())

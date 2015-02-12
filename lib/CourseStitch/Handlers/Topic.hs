@@ -9,7 +9,7 @@ import CourseStitch.Models.RunDB
 topics :: RunDB -> ActionM ()
 topics runDB = do
     topicList <- runDB getTopics
-    template $ Templates.topics topicList
+    content topicList
 
 topicCreate :: RunDB -> ActionM ()
 topicCreate runDB = do
@@ -18,7 +18,7 @@ topicCreate runDB = do
     topic <- runDB (newTopic createdTopic)
     case topic of
         Nothing    -> conflict409 "A topic with this URL already exists"
-        Just topic -> template $ Templates.topic topic
+        Just topic -> content topic
 
 topic :: RunDB -> ActionM ()
 topic runDB = do

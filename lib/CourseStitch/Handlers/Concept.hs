@@ -9,7 +9,7 @@ import CourseStitch.Models.RunDB
 concepts :: RunDB -> ActionM ()
 concepts runDB = do
     conceptList <- runDB getConcepts
-    template $ Templates.concepts conceptList
+    content conceptList
 
 conceptCreate :: RunDB -> ActionM ()
 conceptCreate runDB = do
@@ -18,7 +18,7 @@ conceptCreate runDB = do
     concept <- runDB (newConcept createdConcept)
     case concept of
         Nothing      -> conflict409 "A concept with this URL already exists"
-        Just concept -> template $ Templates.conceptCreated concept
+        Just concept -> content concept
 
 concept :: RunDB -> ActionM ()
 concept runDB = conceptAction runDB $ \name concept topic resources -> do
@@ -33,13 +33,13 @@ conceptUpdate runDB = do
             concept' <- runDB (getConcept name)
             case concept' of
                 Nothing                   -> notFound404 "concept"
-                Just (concept, resources) -> template $ Templates.conceptUpdated concept
+                Just (concept, resources) -> content concept
 
 conceptDelete :: RunDB -> ActionM ()
 conceptDelete runDB = do
     conceptAction runDB $ \name concept topic resources -> do
         runDB (deleteConcept name)
-        template $ Templates.conceptDeleted concept
+        content concept
 
 conceptAction :: RunDB
                  -> (String -> Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> ActionM ())

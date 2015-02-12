@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, FlexibleInstances, FlexibleContexts #-}
 
 module CourseStitch.Templates.Utils (
     module Lucid,
@@ -18,7 +18,10 @@ import CourseStitch.Models
 
 import Data.Maybe (fromMaybe)
 
-unorderedList :: [Html ()] -> Html ()
+instance ToHtml (Entity a) => ToHtml [Entity a] where
+    toHtml = unorderedList . map toHtml
+
+unorderedList :: Monad m => [HtmlT m ()] -> HtmlT m ()
 unorderedList = ul_ . mconcat . (map li_)
 
 link :: Monad m => Text -> HtmlT m () -> HtmlT m ()
