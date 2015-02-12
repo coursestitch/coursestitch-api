@@ -18,7 +18,7 @@ import CourseStitch.Templates.Utils
 import CourseStitch.Templates.Resource
 import CourseStitch.Templates.Concept (conceptSimple)
 import CourseStitch.Templates.Relationship (relationshipUri)
-import Templates.Website (page)
+import Templates.Website (page , typeahead)
 
 resourceDetailed :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
 resourceDetailed resource rels = do
@@ -55,6 +55,7 @@ resourceRelationships resource topics relationships = do
     script_ [src_ "/js/request.js"] ("" :: String)
     script_ [src_ "/js/checkbox-change.js"] ("" :: String)
     unorderedList $ map (uncurry (topicRelationships resource relationships)) topics
+    typeahead "/topic" "Enter a new topic"
 
 topicRelationships :: Entity Resource -> [Entity Relationship] -> Entity Topic -> [Entity Concept] -> Html ()
 topicRelationships resource relationships topic concepts = do

@@ -2,6 +2,8 @@
 
 module Templates.Website where
 
+import Data.String (fromString)
+
 import Lucid
 
 import CourseStitch.Models
@@ -19,3 +21,12 @@ page body = do
         body_ body
     
     where css_ url = link_ [type_ "text/css", rel_ "stylesheet", href_ url]
+
+typeahead :: String -> String -> Html ()
+typeahead aheadUri placeholder = do
+    input_ [ class_ "typeahead", placeholder_ $ fromString placeholder
+           , data_ "url" $ fromString aheadUri]
+
+    script_ [src_ "//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"] ("" :: String)
+    script_ [src_ "/js/typeahead.js"] ("" :: String)
+    script_ [src_ "/js/typeahead-input.js"] ("" :: String)
