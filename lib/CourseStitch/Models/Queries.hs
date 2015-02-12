@@ -4,6 +4,7 @@ import Data.Int (Int64)
 
 import Data.String (fromString)
 import Data.Text (Text)
+import Data.Text (strip, split, unpack)
 import Data.Text.Encoding (decodeUtf8)
 import Data.List (unzip3, nub)
 import Data.Maybe (catMaybes, listToMaybe, isJust)
@@ -166,7 +167,27 @@ deleteConcept id = deleteWhere [ConceptId P.==. toSqlKey id]
 getTopics :: SqlPersistT IO [Entity Topic]
 getTopics = selectList [] []
 
--- Select all Topics in the database
+-- Get all the Topics related to a resource from the database
+getTopicsFromResource :: Entity Resource -> SqlPersistT IO [(Entity Topic, [Entity Concept])]
+getTopicsFromResource resource = do
+    let id = entityKey resource
+
+    topics <- select $
+        from $ \(resource `InnerJoin` relationship `InnerJoin` concept `InnerJoin` topic) -> do
+        on $ concept ^. ConceptId ==. relationship ^. RelationshipConcept
+        on $ resource ^. ResourceId ==. relationship ^. RelationshipResource
+        on $ just (topic ^. TopicId) ==. concept ^. ConceptTopic
+        where_ $ resource ^. ResourceId ==. val id 
+        return (topic, concept)
+
+    let conceptTopics = groups topics
+
+    let keywords = map unpack . map strip . split (==',') $ (resourceKeywords . entityVal) resource
+    kwTopics <- getTopicsFromKeywords keywords
+
+    return $ nub $ kwTopics ++ conceptTopics
+
+-- Select all Topics that are in a list of strings from the database
 getTopicsFromKeywords :: [String] -> SqlPersistT IO [(Entity Topic, [Entity Concept])]
 getTopicsFromKeywords kws = do
     topics <- select $

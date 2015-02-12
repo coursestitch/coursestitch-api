@@ -41,7 +41,7 @@ Concept json
     topic TopicId Maybe
     title Text
     UniqueConceptTitle title
-    deriving Show
+    deriving Show Eq
 
 Topic json
     title   Text

@@ -34,8 +34,7 @@ resourcePage runDB = authenticate runDB fail success where
 
 resourceEdit :: RunDB -> ActionM ()
 resourceEdit runDB = resourceAction runDB $ \id resource concepts -> do
-    let keywords = map unpack . map strip . split (==',') $ (resourceKeywords . entityVal) resource
-    topics <- runDB (getTopicsFromKeywords $ keywords)
+    topics <- runDB (getTopicsFromResource resource)
     relationships <- runDB (getRelationshipsFromResource resource)
     
     template $ Templates.page $ do
