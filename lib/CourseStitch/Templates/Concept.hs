@@ -47,8 +47,8 @@ conceptResources rel resources = do
         [] -> conceptResourcesMissing rel
         resources -> unorderedList $ map resourceSimple resources
 
-
-conceptUri concept = mappend "/concept/" ((conceptTitle . entityVal) concept)
+conceptUri :: Entity Concept -> Text
+conceptUri concept = mappend "/concept/" ((fromString . show . entityId) concept)
 conceptLink concept html = link (conceptUri concept) html
 
 conceptHeading = h1_ . toHtml . conceptTitle . entityVal
