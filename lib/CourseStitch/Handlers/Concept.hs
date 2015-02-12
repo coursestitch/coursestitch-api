@@ -22,7 +22,7 @@ conceptCreate runDB = do
 
 concept :: RunDB -> ActionM ()
 concept runDB = conceptAction runDB $ \name concept topic resources -> do
-    template $ Templates.concept concept
+    content concept
 
 conceptUpdate :: RunDB -> ActionM ()
 conceptUpdate runDB = do

@@ -1,9 +1,12 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, FlexibleInstances, NoMonomorphismRestriction #-}
 
 module CourseStitch.Templates.Topic where
 
 import CourseStitch.Templates.Utils
 import CourseStitch.Templates.Concept
+
+instance ToHtml (Entity Topic) where
+    toHtml = topicSimple
 
 topics :: [Entity Topic] -> Html ()
 topics ts = unorderedList $ map topicSimple ts
@@ -11,7 +14,7 @@ topics ts = unorderedList $ map topicSimple ts
 topic :: Entity Topic -> Html ()
 topic topic = article_ $ topicSimple topic
 
-topicSimple :: Entity Topic -> Html ()
+topicSimple :: Monad m => Entity Topic -> HtmlT m ()
 topicSimple topic = do
     topicLink topic $ topicHeading topic
     topicText topic

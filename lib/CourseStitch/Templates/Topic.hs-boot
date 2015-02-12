@@ -4,4 +4,4 @@ import Lucid
 import CourseStitch.Models
 import Database.Persist (Entity)
 
-topicSimple :: Entity Topic -> Html ()
+topicSimple :: Monad m => Entity Topic -> HtmlT m ()

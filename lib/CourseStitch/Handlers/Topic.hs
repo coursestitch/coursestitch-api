@@ -25,7 +25,7 @@ topic runDB = do
     title <- param "topic"
     topic <- runDB (getTopic title)
     case topic of Nothing                -> notFound404 "topic"
-                  Just (topic, concepts) -> template $ Templates.topic topic
+                  Just (topic, concepts) -> content topic
 
 topicFromParams :: ActionM Topic
 topicFromParams = do

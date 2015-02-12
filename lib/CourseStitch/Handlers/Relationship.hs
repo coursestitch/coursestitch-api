@@ -25,7 +25,7 @@ relationshipCreate runDB = do
 
 relationship :: RunDB -> ActionM ()
 relationship runDB = relationshipAction runDB $ \relationship resource concept -> do
-    template $ Templates.relationship relationship
+    content relationship
 
 relationshipDelete :: RunDB -> ActionM ()
 relationshipDelete runDB = do

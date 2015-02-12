@@ -1,10 +1,13 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, FlexibleInstances, NoMonomorphismRestriction #-}
 
 module CourseStitch.Templates.Concept where
 
 import CourseStitch.Templates.Utils
 import {-# SOURCE #-} CourseStitch.Templates.Topic (topicSimple)
 import {-# SOURCE #-} CourseStitch.Templates.Resource (resourceSimple)
+
+instance ToHtml (Entity Concept) where
+    toHtml = conceptSimple
 
 concepts :: [Entity Concept] -> Html ()
 concepts cs = unorderedList $ map conceptSimple cs
@@ -27,7 +30,7 @@ conceptDeleted c = do
     p_ $ toHtml $ mconcat [conceptUri c, " was deleted"]
     concept c
 
-conceptSimple :: Entity Concept -> Html ()
+conceptSimple :: Monad m => Entity Concept -> HtmlT m ()
 conceptSimple concept = do
     conceptLink concept $ conceptHeading concept
 

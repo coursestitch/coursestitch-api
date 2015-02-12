@@ -37,19 +37,19 @@ Resource json
     keywords Text
     deriving Show
 
-Concept
+Concept json
     topic TopicId Maybe
     title Text
     UniqueConceptTitle title
     deriving Show
 
-Topic
+Topic json
     title   Text
     summary Text
     UniqueTopicTitle title
     deriving Show Eq
 
-Relationship
+Relationship json
     resource     ResourceId
     relationship RelationshipType
     concept      ConceptId
@@ -67,13 +67,13 @@ Session
     token Token
     deriving Show
 
-ResourceMastery
+ResourceMastery json
     user     UserId
     resource ResourceId
     UniqueMasteryUserResource user resource
     deriving Show
 
-ConceptMastery
+ConceptMastery json
     user    UserId
     concept ConceptId
     UniqueMasteryUserConcept user concept

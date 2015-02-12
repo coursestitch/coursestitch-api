@@ -1,8 +1,11 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, FlexibleInstances, NoMonomorphismRestriction #-}
 
 module CourseStitch.Templates.User where
 
 import CourseStitch.Templates.Utils
+
+instance ToHtml (Entity User) where
+    toHtml = userSimple
 
 users :: [Entity User] -> Html ()
 users us = unorderedList $ map userSimple us
@@ -10,7 +13,7 @@ users us = unorderedList $ map userSimple us
 user :: Entity User -> Html ()
 user user = article_ $ userDetailed user
 
-userSimple :: Entity User -> Html ()
+userSimple :: Monad m => Entity User -> HtmlT m ()
 userSimple u = userLink u
 
 userDetailed :: Entity User -> Html ()

@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, FlexibleInstances, NoMonomorphismRestriction #-}
 
 module CourseStitch.Templates.Relationship where
 
@@ -8,6 +8,9 @@ import Database.Persist.Sql (unSqlBackendKey)
 import CourseStitch.Templates.Utils
 import {-# SOURCE #-} CourseStitch.Templates.Resource (resourceSimple)
 import CourseStitch.Templates.Concept (conceptSimple)
+
+instance ToHtml (Entity Relationship) where
+    toHtml = relationshipSimple
 
 relationships :: [Entity Relationship] -> Html ()
 relationships cs = unorderedList $ map relationshipSimple cs
@@ -30,7 +33,7 @@ relationshipDeleted rel = do
     p_ $ mconcat [relationshipUri (entityVal rel), " was deleted"]
     relationship rel
 
-relationshipSimple :: Entity Relationship -> Html ()
+relationshipSimple :: Monad m => Entity Relationship -> HtmlT m ()
 relationshipSimple relationship = do
     relationshipLink (entityVal relationship) $ relationshipHeading relationship
     
