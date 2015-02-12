@@ -19,7 +19,7 @@ topicSimple topic = do
     topicLink topic $ topicHeading topic
     topicText topic
 
-topicUri topic = mappend "/topic/" (topicTitle $ entityVal topic)
+topicUri topic = mappend "/topic/" ((fromString . show . entityId) topic)
 topicLink topic html = link (topicUri topic) html
 
 topicHeading = h1_ . toHtml . topicTitle . entityVal

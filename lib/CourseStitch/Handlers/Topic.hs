@@ -2,6 +2,8 @@
 
 module CourseStitch.Handlers.Topic where
 
+import Data.Int (Int64)
+
 import CourseStitch.Handlers.Utils
 import qualified CourseStitch.Templates as Templates
 import CourseStitch.Models.RunDB
@@ -22,10 +24,17 @@ topicCreate runDB = do
 
 topic :: RunDB -> ActionM ()
 topic runDB = do
-    title <- param "topic"
-    topic <- runDB (getTopic title)
-    case topic of Nothing                -> notFound404 "topic"
-                  Just (topic, concepts) -> content topic
+    withTopicId $ \id -> do
+        topic <- runDB (getTopic id)
+        case topic of Nothing                -> notFound404 "topic"
+                      Just (topic, concepts) -> content topic
+
+withTopicId :: (Int64 -> ActionM ()) -> ActionM ()
+withTopicId action = do
+    id <- param "topic"
+    case readMaybe id of
+        Nothing -> badRequest400 "Topics should be of the form /topic/<integer>"
+        Just id -> action id
 
 topicFromParams :: ActionM Topic
 topicFromParams = do

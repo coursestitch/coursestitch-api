@@ -178,13 +178,13 @@ getTopicsFromKeywords kws = do
     -- Group together the topics into a list
     return $ groups topics
 
-getTopic :: String -> SqlPersistT IO (Maybe (Entity Topic, [Entity Concept]))
-getTopic title = do
+getTopic :: Int64 -> SqlPersistT IO (Maybe (Entity Topic, [Entity Concept]))
+getTopic id = do
     -- Select topic with given title from the DB, and the concepts associated with them.
     tcs <- select $
         from $ \(topic `LeftOuterJoin` concept) -> do
         on (just (just (topic ^. TopicId)) ==. concept ?. ConceptTopic)
-        where_ (topic ^. TopicTitle ==. (val . fromString) title)
+        where_ (topic ^. TopicId ==. (val . toSqlKey) id)
         return (topic, concept)
 
     -- Group together the concepts into a list
