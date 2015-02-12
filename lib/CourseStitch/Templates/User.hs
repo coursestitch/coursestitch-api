@@ -19,6 +19,9 @@ userSimple u = userLink u
 userDetailed :: Entity User -> Html ()
 userDetailed u = userTitle u
 
+userCreated :: Entity User -> Html ()
+userCreated = userDetailed
+
 userTitle u = h1_ $ "User " <> toHtml (uName u)
 userLink u = link (userUri u) (toHtml (uName u))
 userUri u = "/user/" <> (uName u)

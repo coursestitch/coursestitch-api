@@ -22,7 +22,7 @@ import CourseStitch.Models
 -- Private imports.
 import Data.Text.Lazy (isInfixOf)
 import Data.Monoid (mconcat)
-import Network.HTTP.Types.Status (status409, status404, status403, status400)
+import Network.HTTP.Types.Status (status500, status409, status404, status403, status400)
 
 import Web.Scotty (ActionM, raw, json, setHeader, header)
 import Database.Persist (entityIdToJSON, PersistEntity, Key)
@@ -68,4 +68,8 @@ badRequest400 msg = do
 
 forbidden403 msg = do
     status status403
+    text msg
+
+error500 msg = do
+    status status500
     text msg
