@@ -2,6 +2,8 @@
 
 module CourseStitch.Handlers.Concept where
 
+import Data.Int (Int64)
+
 import CourseStitch.Handlers.Utils
 import qualified CourseStitch.Templates as Templates
 import CourseStitch.Models.RunDB
@@ -21,37 +23,44 @@ conceptCreate runDB = do
         Just concept -> content concept
 
 concept :: RunDB -> ActionM ()
-concept runDB = conceptAction runDB $ \name concept topic resources -> do
+concept runDB = conceptAction runDB $ \id concept topic resources -> do
     content concept
 
 conceptUpdate :: RunDB -> ActionM ()
 conceptUpdate runDB = do
     updatedConcept <- conceptFromParams
 
-    conceptAction runDB $ \name concept topic resources -> do
-            runDB (editConcept name updatedConcept)
-            concept' <- runDB (getConcept name)
+    conceptAction runDB $ \id concept topic resources -> do
+            runDB (editConcept id updatedConcept)
+            concept' <- runDB (getConcept id)
             case concept' of
                 Nothing                   -> notFound404 "concept"
                 Just (concept, resources) -> content concept
 
 conceptDelete :: RunDB -> ActionM ()
 conceptDelete runDB = do
-    conceptAction runDB $ \name concept topic resources -> do
-        runDB (deleteConcept name)
+    conceptAction runDB $ \id concept topic resources -> do
+        runDB (deleteConcept id)
         content concept
 
+withConceptId :: (Int64 -> ActionM ()) -> ActionM ()
+withConceptId action = do
+    id <- param "concept"
+    case readMaybe id of
+        Nothing -> badRequest400 "Concepts should be of the form /concept/<integer>"
+        Just id -> action id
+
 conceptAction :: RunDB
-                 -> (String -> Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> ActionM ())
+                 -> (Int64 -> Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> ActionM ())
                  -> ActionM ()
 conceptAction runDB action = do
-    name <- param "concept"
-    concept <- runDB (getConcept name)
-    case concept of
-        Nothing                   -> notFound404 "concept"
-        Just (concept, resources) -> do
-            topic <- runDB (getConceptTopic concept)
-            action name concept topic resources
+    withConceptId $ \id -> do
+        concept <- runDB (getConcept id)
+        case concept of
+            Nothing                   -> notFound404 "concept"
+            Just (concept, resources) -> do
+                topic <- runDB (getConceptTopic concept)
+                action id concept topic resources
 
 conceptFromParams :: ActionM Concept
 conceptFromParams = do

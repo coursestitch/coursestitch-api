@@ -127,14 +127,14 @@ deleteRelationship rel = P.delete $ entityKey rel
 getConcepts :: SqlPersistT IO [Entity Concept]
 getConcepts = selectList [] []
 
-getConcept :: String -> SqlPersistT IO (Maybe (Entity Concept, [(RelationshipType, [Entity Resource])]))
-getConcept title = do
+getConcept :: Int64 -> SqlPersistT IO (Maybe (Entity Concept, [(RelationshipType, [Entity Resource])]))
+getConcept id = do
     -- Select concept with given title from the DB, and the resources associated with it.
     cs <- select $
         from $ \(concept `LeftOuterJoin` relationship `LeftOuterJoin` resource) -> do
         on (just (concept ^. ConceptId) ==. relationship ?. RelationshipConcept)
         on (resource ?. ResourceId   ==. relationship ?. RelationshipResource)
-        where_ (concept ^. ConceptTitle ==. (val . fromString) title)
+        where_ (concept ^. ConceptId ==. (val . toSqlKey) id)
         return (concept, relationship, resource)
     
     -- Group together the concepts into a list
@@ -149,17 +149,17 @@ newConcept concept = do
         Nothing  -> Nothing
 
 -- Update a concept
-editConcept :: String -> Concept -> SqlPersistT IO Concept
-editConcept name concept = do
-    oldConcept <- selectFirst [ConceptTitle P.==. fromString name] []
+editConcept :: Int64 -> Concept -> SqlPersistT IO Concept
+editConcept id concept = do
+    oldConcept <- selectFirst [ConceptId P.==. toSqlKey id] []
     case fmap entityKey oldConcept of
         Nothing  -> return ()
         Just key -> replace key concept
     return concept
 
 -- Delete a concept
-deleteConcept :: String -> SqlPersistT IO ()
-deleteConcept name = deleteWhere [ConceptTitle P.==. fromString name]
+deleteConcept :: Int64 -> SqlPersistT IO ()
+deleteConcept id = deleteWhere [ConceptId P.==. toSqlKey id]
 
 
 -- Select all Topics in the database
