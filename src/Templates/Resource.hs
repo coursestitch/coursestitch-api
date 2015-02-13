@@ -54,8 +54,10 @@ resourceRelationships :: Entity Resource -> [(Entity Topic, [Entity Concept])] -
 resourceRelationships resource topics relationships = do
     script_ [src_ "/js/request.js"] ("" :: String)
     script_ [src_ "/js/checkbox-change.js"] ("" :: String)
-    unorderedList $ map (uncurry (topicRelationships resource relationships)) topics
-    typeahead "/topic" "Enter a new topic"
+    script_ [src_ "/js/add-topic.js"] ("" :: String)
+    ul_ [class_ "topic-list"] $
+        mconcat $ (map li_) $ map (uncurry (topicRelationships resource relationships)) topics
+    typeahead "/topic" "Enter a new topic" ["add-topic"]
 
 topicRelationships :: Entity Resource -> [Entity Relationship] -> Entity Topic -> [Entity Concept] -> Html ()
 topicRelationships resource relationships topic concepts = do
