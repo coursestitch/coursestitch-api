@@ -55,6 +55,7 @@ resourceRelationships resource topics relationships = do
     script_ [src_ "/js/request.js"] ("" :: String)
     script_ [src_ "/js/checkbox-change.js"] ("" :: String)
     script_ [src_ "/js/add-topic.js"] ("" :: String)
+    script_ [src_ "/js/add-concept.js"] ("" :: String)
     ul_ [class_ "topic-list"] $
         mconcat $ (map li_) $
         map (uncurry (topicRelationships (entityKey resource) (map entityVal relationships))) topics
@@ -63,7 +64,11 @@ resourceRelationships resource topics relationships = do
 topicRelationships :: Key Resource -> [Relationship] -> Entity Topic -> [Entity Concept] -> Html ()
 topicRelationships resource relationships topic concepts = do
     h1_ $ (toHtml . topicTitle . entityVal) topic
-    unorderedList $ map (relationship resource relationships) concepts
+    ul_ [class_ "concept-list"] $
+        mconcat $ (map li_) $
+        map (relationship resource relationships) concepts
+    
+    input_ [class_ "add-concept", placeholder_ "Enter a new concept", data_ "topic" $ (fromString . show . entityId) topic]
 
 relationship :: Key Resource -> [Relationship] -> Entity Concept -> Html ()
 relationship resource relationships concept = do

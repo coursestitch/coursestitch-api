@@ -12,6 +12,7 @@ import Database.Persist (Entity, entityVal, toBackendKey)
 import CourseStitch.Handlers.Utils
 import CourseStitch.Handlers.User (authenticate)
 import CourseStitch.Handlers.Resource
+import CourseStitch.Handlers.Concept (withConceptId)
 import CourseStitch.Models.RunDB
 
 import qualified Templates
@@ -55,3 +56,15 @@ resourceTopic runDB = resourceAction runDB $ \id resource concepts -> do
                 Nothing -> notFound404 "Topic"
                 Just (topic, concepts) -> do
                     template $ Templates.topicRelationships resourceId (map entityVal relationships) topic concepts
+
+resourceRelationship :: RunDB -> ActionM ()
+resourceRelationship runDB = resourceAction runDB $ \id resource concepts -> do
+    let resourceId = toSqlKey id
+    relationships <- runDB (getRelationshipsFromResource resource)
+    
+    withConceptId $ \conceptId -> do
+        concept <- runDB $ getConcept conceptId
+        case concept of
+            Nothing -> notFound404 "concept"
+            Just (concept, _) -> do
+                template $ Templates.relationship resourceId (map entityVal relationships) concept
