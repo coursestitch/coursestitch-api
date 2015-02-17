@@ -16,10 +16,12 @@ $(document).ready(function() {
     $('.add-concept')
         .on('keypress', function(event) {
             var topic = this.dataset.topic;
-            if (event.keyCode === ENTER_KEY)
+            if (event.keyCode === ENTER_KEY) {
                 createConcept(this.value, topic, function() {
                     var concept = JSON.parse(this.response);
-                    addConcept(document.querySelector('#topic-'+topic+'.concept-list'), concept.id)
+                    addConcept(document.querySelector('#topic-'+topic+'.concept-list'), concept.id);
                 });
+                this.value = '';
+            }
         });
 });
