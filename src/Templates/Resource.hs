@@ -11,7 +11,7 @@ import Network.HTTP.Types.Method (methodGet, methodPost, methodPut, methodDelete
 
 import Lucid
 import CourseStitch.Models
-import Database.Persist (Entity(..), entityKey, entityVal, toBackendKey)
+import Database.Persist (Entity(..), Key, entityKey, entityVal, toBackendKey)
 import Database.Persist.Sql (unSqlBackendKey)
 
 import CourseStitch.Templates.Utils
@@ -56,15 +56,16 @@ resourceRelationships resource topics relationships = do
     script_ [src_ "/js/checkbox-change.js"] ("" :: String)
     script_ [src_ "/js/add-topic.js"] ("" :: String)
     ul_ [class_ "topic-list"] $
-        mconcat $ (map li_) $ map (uncurry (topicRelationships resource relationships)) topics
+        mconcat $ (map li_) $
+        map (uncurry (topicRelationships (entityKey resource) (map entityVal relationships))) topics
     typeahead "/topic" "Enter a new topic" ["add-topic"]
 
-topicRelationships :: Entity Resource -> [Entity Relationship] -> Entity Topic -> [Entity Concept] -> Html ()
+topicRelationships :: Key Resource -> [Relationship] -> Entity Topic -> [Entity Concept] -> Html ()
 topicRelationships resource relationships topic concepts = do
     h1_ $ (toHtml . topicTitle . entityVal) topic
     unorderedList $ map (relationship resource relationships) concepts
 
-relationship :: Entity Resource -> [Entity Relationship] -> Entity Concept -> Html ()
+relationship :: Key Resource -> [Relationship] -> Entity Concept -> Html ()
 relationship resource relationships concept = do
     (toHtml . conceptTitle . entityVal) concept
     br_ []
@@ -73,10 +74,10 @@ relationship resource relationships concept = do
     where checkbox rel = do
             input_ ([id_ $ id rel, type_ "checkbox", name_ "relationship", onchange_ $ update rel] ++ checked rel)
             label_ [for_ $ id rel] $ (toHtml . show) rel
-          checked rel = if elem (relationship rel) (map entityVal relationships) then [checked_] else []
+          checked rel = if elem (relationship rel) relationships then [checked_] else []
           id rel = mconcat [(fromString . show) rel, key concept]
           key = (fromString . show . unSqlBackendKey . toBackendKey . entityKey)
-          relationship rel = Relationship (entityKey resource) rel (entityKey concept)
+          relationship rel = Relationship resource rel (entityKey concept)
           update rel = fromString $ concat ["checkboxChange(this,",
             "request.bind(this, 'PUT', '"++uri (relationship rel)++"'),",
             "request.bind(this, 'DELETE', '"++uri (relationship rel)++"')",

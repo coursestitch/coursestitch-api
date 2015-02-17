@@ -1,5 +1,5 @@
 var addTopic = function(topicList, topicId) {
-    var url = '/topic/'+topicId;
+    var url = 'topic/'+topicId;
     request('GET', url, null, function() {
         var listElement = document.createElement('li');
         listElement.innerHTML = this.responseText;

@@ -7,7 +7,7 @@ import Data.Int (Int64)
 import Data.Text (strip, split, unpack)
 import Data.String (fromString)
 
-import Database.Persist (Entity, entityVal)
+import Database.Persist (Entity, entityVal, toBackendKey)
 
 import CourseStitch.Handlers.Utils
 import CourseStitch.Handlers.User (authenticate)
@@ -40,3 +40,18 @@ resourceEdit runDB = resourceAction runDB $ \id resource concepts -> do
     template $ Templates.page $ do
         Templates.resourceForm $ Just resource
         Templates.resourceRelationships resource topics relationships
+
+resourceTopic :: RunDB -> ActionM ()
+resourceTopic runDB = resourceAction runDB $ \id resource concepts -> do
+    let resourceId = toSqlKey id
+    relationships <- runDB (getRelationshipsFromResource resource)
+    topicId <- param "topic"
+
+    case readMaybe topicId of
+        Nothing -> badRequest400 "Topic id should be an integer"
+        Just topicId -> do
+            topic <- runDB $ getTopic topicId
+            case topic of
+                Nothing -> notFound404 "Topic"
+                Just (topic, concepts) -> do
+                    template $ Templates.topicRelationships resourceId (map entityVal relationships) topic concepts
