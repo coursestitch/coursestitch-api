@@ -1,4 +1,4 @@
-request = function(method, uri, data, onload) {
+request = function(method, uri, data, onload, type) {
     // Create request
     var request = new XMLHttpRequest();
 
@@ -7,6 +7,10 @@ request = function(method, uri, data, onload) {
 
     // Make request
     request.open(method, uri);
+
+    // Set request type
+    if (type)
+        request.setRequestHeader("Accept", type);
 
     // Send data
     request.send(data);

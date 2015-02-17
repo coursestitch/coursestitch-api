@@ -7,8 +7,21 @@ var addTopic = function(topicList, topicId) {
     });
 };
 
+var createTopic = function(topicName, callback) {
+    request('POST', '/topic?title='+topicName+'&summary', null, callback, "application/json");
+};
+
+var ENTER_KEY = 13;
 $(document).ready(function() {
-    $('.add-topic').on('typeahead:selected', function(event, data) {
-        addTopic(document.querySelector('.topic-list'), data['id'])
-    });
+    $('.add-topic')
+        .on('typeahead:selected', function(event, data) {
+            addTopic(document.querySelector('.topic-list'), data['id'])
+        })
+        .on('keypress', function(event, data) {
+            if (event.keyCode === ENTER_KEY)
+                createTopic(this.value, function() {
+                    var topic = JSON.parse(this.response);
+                    addTopic(document.querySelector('.topic-list'), topic.id)
+                });
+        });
 });
