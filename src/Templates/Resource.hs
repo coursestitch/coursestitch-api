@@ -64,7 +64,7 @@ resourceRelationships resource topics relationships = do
 topicRelationships :: Key Resource -> [Relationship] -> Entity Topic -> [Entity Concept] -> Html ()
 topicRelationships resource relationships topic concepts = do
     h1_ $ (toHtml . topicTitle . entityVal) topic
-    ul_ [class_ "concept-list"] $
+    ul_ [id_ $ fromString ("topic-"++ (fromString . show . entityId) topic), class_ "concept-list"] $
         mconcat $ (map li_) $
         map (relationship resource relationships) concepts
     
