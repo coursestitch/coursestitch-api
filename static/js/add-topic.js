@@ -16,12 +16,15 @@ $(document).ready(function() {
     $('.add-topic')
         .on('typeahead:selected', function(event, data) {
             addTopic(document.querySelector('.topic-list'), data['id'])
+            this.value = '';
         })
         .on('keypress', function(event, data) {
-            if (event.keyCode === ENTER_KEY)
+            if (event.keyCode === ENTER_KEY) {
                 createTopic(this.value, function() {
                     var topic = JSON.parse(this.response);
                     addTopic(document.querySelector('.topic-list'), topic.id)
                 });
+                this.value = '';
+            }
         });
 });
