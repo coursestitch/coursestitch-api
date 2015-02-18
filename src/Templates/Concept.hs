@@ -20,6 +20,7 @@ import Templates.Website (page)
 conceptDetailed :: Entity Concept -> Maybe (Entity Topic) -> [(RelationshipType, [Entity Resource])] -> Html ()
 conceptDetailed concept topic rels = do
     conceptLink concept $ conceptHeading concept
+    link (conceptUri concept `mappend` "/edit") "edit"
     conceptTopicArticle topic
     mconcat $ map (uncurry conceptResources) rels
 

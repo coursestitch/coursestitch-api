@@ -20,7 +20,18 @@ blockquote {
     background-color: #eee;
 }
 
-/* Headers */
+/* Header */
+header {
+    padding: 15px;
+    
+    background-color: #eee;
+}
+
+header nav > a {
+    margin: 0px 15px;
+}
+
+/* Headings */
 h1, h2, h3, h4, h5, h6 {
     font-family: Lobster;
     font-weight: normal;

@@ -23,6 +23,7 @@ import Templates.Website (page , typeahead)
 resourceDetailed :: Entity Resource -> [(RelationshipType, [Entity Concept])] -> Html ()
 resourceDetailed resource rels = do
     resourceLink resource $ resourceHeading resource
+    link (resourceUri resource `mappend` "/edit") "edit"
     resourceText resource
     resourceExternalLink resource $ resourceQuote resource
 

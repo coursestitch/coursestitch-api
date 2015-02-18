@@ -6,6 +6,7 @@ import Data.String (fromString)
 import Data.List (intercalate)
 
 import Lucid
+import CourseStitch.Templates.Utils
 
 import CourseStitch.Models
 import Database.Persist (Entity)
@@ -20,9 +21,18 @@ page body = do
             script_ [] ("try{Typekit.load();}catch(e){}" :: String)
             css_ "/css/reset.css"
             css_ "/css/main.css"
+        header
         body_ body
     
     where css_ url = link_ [type_ "text/css", rel_ "stylesheet", href_ url]
+
+header :: Html ()
+header = header_ $ do
+    nav_ $ do
+        link "/" "course stitch"
+        link "/resource" "resources"
+        link "/concept" "concepts"
+        link "/topic" "topics"
 
 typeahead :: String -> String -> [String] -> Html ()
 typeahead aheadUri placeholder classes = do
