@@ -21,13 +21,25 @@ $(document).ready(function() {
             addTopic(document.querySelector('.topic-list'), data['id'])
             this.value = '';
         })
+        .on('typeahead:autocompleted', function(event, data) {
+            $(this).data('id', data['id']);
+        })
         .on('keypress', function(event, data) {
             if (event.keyCode === ENTER_KEY) {
-                createTopic(this.value, function() {
-                    var topic = JSON.parse(this.response);
-                    addTopic(document.querySelector('.topic-list'), topic.id)
-                });
-                this.value = '';
+                var id = $(this).data('id');
+                if (id) {
+                    addTopic(document.querySelector('.topic-list'), id);
+                    this.value = '';
+                    $(this).typeahead('close');
+                } else {
+                    createTopic(this.value, function() {
+                        var topic = JSON.parse(this.response);
+                        addTopic(document.querySelector('.topic-list'), topic.id)
+                    });
+                    this.value = '';
+                }
+            } else {
+                $(this).data('id', undefined);
             }
         });
 });
