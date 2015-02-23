@@ -19,6 +19,7 @@ page body = do
             script_ [src_ "//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"] ("" :: String)
             script_ [src_ "//use.typekit.net/wlh0kqu.js"] ("" :: String)
             script_ [] ("try{Typekit.load();}catch(e){}" :: String)
+            meta_ [name_ "viewport", content_ "width=device-width, initial-scale=1"]
             css_ "/css/reset.css"
             css_ "/css/main.css"
         header
