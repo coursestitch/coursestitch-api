@@ -22,6 +22,7 @@ blockquote {
 
 /* Header */
 header {
+    font-family: Lobster;
     padding: 15px;
     
     background-color: #eee;
