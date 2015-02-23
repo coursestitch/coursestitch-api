@@ -4,6 +4,9 @@ var addTopic = function(topicList, topicId) {
         var listElement = document.createElement('li');
         listElement.innerHTML = this.responseText;
         topicList.appendChild(listElement);
+        // Make concept input functional
+        var addConcept = $(listElement).children('.add-concept');
+        conceptInput(addConcept);
     });
 };
 

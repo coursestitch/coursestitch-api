@@ -12,8 +12,8 @@ var createConcept = function(conceptName, topic, callback) {
 };
 
 var ENTER_KEY = 13;
-$(document).ready(function() {
-    $('.add-concept')
+conceptInput = function(element) {
+    $(element)
         .on('keypress', function(event) {
             var topic = this.dataset.topic;
             if (event.keyCode === ENTER_KEY) {
@@ -24,4 +24,8 @@ $(document).ready(function() {
                 this.value = '';
             }
         });
+};
+
+$(document).ready(function() {
+    conceptInput($('.add-concept'));
 });

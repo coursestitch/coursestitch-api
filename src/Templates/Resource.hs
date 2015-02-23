@@ -55,8 +55,8 @@ resourceRelationships :: Entity Resource -> [(Entity Topic, [Entity Concept])] -
 resourceRelationships resource topics relationships = do
     script_ [src_ "/js/request.js"] ("" :: String)
     script_ [src_ "/js/checkbox-change.js"] ("" :: String)
-    script_ [src_ "/js/add-topic.js"] ("" :: String)
     script_ [src_ "/js/add-concept.js"] ("" :: String)
+    script_ [src_ "/js/add-topic.js"] ("" :: String)
     ul_ [class_ "topic-list"] $
         mconcat $ (map li_) $
         map (uncurry (topicRelationships (entityKey resource) (map entityVal relationships))) topics
