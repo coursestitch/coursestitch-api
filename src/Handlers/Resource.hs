@@ -15,7 +15,14 @@ import CourseStitch.Handlers.Resource
 import CourseStitch.Handlers.Concept (withConceptId)
 import CourseStitch.Models.RunDB
 
+import CourseStitch.Templates.Resource as Resource
+
 import qualified Templates
+
+resources :: RunDB -> ActionM ()
+resources runDB = do
+    resourceList <- runDB getResources
+    (template . Templates.page) $ Resource.resources resourceList
 
 resourceNew :: RunDB -> ActionM ()
 resourceNew runDB = do

@@ -10,7 +10,15 @@ import Database.Persist.Sql (toSqlKey)
 import CourseStitch.Handlers.Utils
 import CourseStitch.Handlers.Concept
 import CourseStitch.Models.RunDB
+
+import qualified CourseStitch.Templates.Concept as Concept
+
 import qualified Templates
+
+concepts :: RunDB -> ActionM ()
+concepts runDB = do
+    conceptList <- runDB getConcepts
+    (template. Templates.page) $ Concept.concepts conceptList
 
 conceptNew :: RunDB -> ActionM ()
 conceptNew runDB = do

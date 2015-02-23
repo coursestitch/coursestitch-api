@@ -35,16 +35,19 @@ app :: RunDB -> ScottyM ()
 app runDB = do
     get "/" $ Handlers.root runDB
 
+    get "/resource" $ Handlers.resources runDB
     get "/resource/new" $ Handlers.resourceNew runDB
     get "/resource/:resource" $ Handlers.resourcePage runDB
     get "/resource/:resource/edit" $ Handlers.resourceEdit runDB
     get "/resource/:resource/topic/:topic" $ Handlers.resourceTopic runDB
     get "/resource/:resource/concept/:concept" $ Handlers.resourceRelationship runDB
 
+    get "/concept" $ Handlers.concepts runDB
     get "/concept/new" $ Handlers.conceptNew runDB
     get "/concept/:concept" $ Handlers.conceptPage runDB
     get "/concept/:concept/edit" $ Handlers.conceptEdit runDB
 
+    get "/topic" $ Handlers.topics runDB
     get "/topic/new" $ Handlers.topicNew runDB
 
     get "/login" $ Handlers.loginForm runDB
